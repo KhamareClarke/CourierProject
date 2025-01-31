@@ -1,23 +1,23 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 const AddPalletForm: React.FC = () => {
   const [skus, setSkus] = useState([]); // List of SKUs fetched from the database
-  const [selectedSku, setSelectedSku] = useState(''); // Selected SKU ID
-  const [quantity, setQuantity] = useState('');
-  const [message, setMessage] = useState('');
+  const [selectedSku, setSelectedSku] = useState(""); // Selected SKU ID
+  const [quantity, setQuantity] = useState("");
+  const [message, setMessage] = useState("");
 
   // Fetch SKUs from the database
   useEffect(() => {
     const fetchSkus = async () => {
       try {
-        const response = await fetch('/api/skus');
-        if (!response.ok) throw new Error('Failed to fetch SKUs');
+        const response = await fetch("/api/skus");
+        if (!response.ok) throw new Error("Failed to fetch SKUs");
         const data = await response.json();
         setSkus(data);
-      } catch (error:any) {
-        console.error('Error fetching SKUs:', error:any);
+      } catch (error) {
+        console.error("Error fetching SKUs:", error);
       }
     };
 
@@ -28,9 +28,9 @@ const AddPalletForm: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('/api/pallets', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/pallets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           sku_id: selectedSku,
           quantity: Number(quantity),
@@ -39,17 +39,17 @@ const AddPalletForm: React.FC = () => {
 
       if (response.ok) {
         // Display success message
-        setMessage('Pallet added');
-        setSelectedSku('');
-        setQuantity('');
+        setMessage("Pallet added");
+        setSelectedSku("");
+        setQuantity("");
 
         // Clear message after 3 seconds
         setTimeout(() => {
-          setMessage('');
+          setMessage("");
         }, 3000);
       }
-    } catch (error:any) {
-      console.error('Error adding pallet:', error:any);
+    } catch (error) {
+      console.error("Error adding pallet:", error);
     }
   };
 
@@ -67,7 +67,10 @@ const AddPalletForm: React.FC = () => {
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* SKU Selection Dropdown */}
         <div>
-          <label htmlFor="sku" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="sku"
+            className="block text-sm font-medium text-gray-700"
+          >
             Select SKU
           </label>
           <select
@@ -90,7 +93,10 @@ const AddPalletForm: React.FC = () => {
 
         {/* Quantity Input */}
         <div>
-          <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="quantity"
+            className="block text-sm font-medium text-gray-700"
+          >
             Quantity
           </label>
           <input

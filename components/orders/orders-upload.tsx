@@ -59,8 +59,8 @@ export function OrdersUploadContent() {
       const { data, error } = await supabase
         .from("products")
         .select("id, name");
-      if (error:any) {
-        console.error("Error fetching products:", error:any);
+      if (error instanceof Error) {
+        console.error("Error fetching products:", error);
       } else {
         setProducts(data || []);
       }
@@ -175,7 +175,7 @@ export function OrdersUploadContent() {
             .select("id")
             .single();
 
-          if (customererror:any) {
+          if (customererror) {
             results.push({
               row: i,
               message: `Failed to save customer for ${customerName}: ${customerError.message}`,
@@ -193,7 +193,7 @@ export function OrdersUploadContent() {
             .eq("name", productName)
             .single();
 
-          if (producterror:any) {
+          if (producterror) {
             results.push({
               row: i,
               message: `Product "${productName}" not found.`,
@@ -213,7 +213,7 @@ export function OrdersUploadContent() {
             delivery_date: deliveryDate,
           });
 
-          if (ordererror:any) {
+          if (ordererror) {
             results.push({
               row: i,
               message: `Failed to save order for ${customerName}: ${orderError.message}`,
@@ -229,7 +229,7 @@ export function OrdersUploadContent() {
             type: "success",
           });
           successCount++;
-        } catch (error:any) {
+        } catch (error) {
           results.push({
             row: i,
             message: `Row ${i}: ${error.message || "Unknown error occurred."}`,

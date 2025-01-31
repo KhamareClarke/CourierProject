@@ -1,10 +1,12 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { supabase } from './SupabaseClient';
+import { useState, useEffect } from "react";
+import { supabase } from "./SupabaseClient";
 
 export function StockContent() {
-  const [activeSection, setActiveSection] = useState<'inventory' | 'skus' | 'bins' | 'pallets' | 'quarantine'>('inventory');
+  const [activeSection, setActiveSection] = useState<
+    "inventory" | "skus" | "bins" | "pallets" | "quarantine"
+  >("inventory");
 
   // Global States
   const [skus, setSKUs] = useState<any[]>([]);
@@ -12,47 +14,51 @@ export function StockContent() {
   const [categories, setCategories] = useState<string[]>([]);
   const [locations, setLocations] = useState<string[]>([]);
   const [filteredInventory, setFilteredInventory] = useState<any[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [filterCategory, setFilterCategory] = useState<string>('');
-  const [filterLocation, setFilterLocation] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [filterCategory, setFilterCategory] = useState<string>("");
+  const [filterLocation, setFilterLocation] = useState<string>("");
 
   // Form States
   const [formData, setFormData] = useState({
-    skuName: '',
-    skuCode: '',
-    skuCategory: '',
-    skuDescription: '',
-    binName: '',
-    binLocation: '',
-    binSKU: '',
-    palletSKU: '',
+    skuName: "",
+    skuCode: "",
+    skuCategory: "",
+    skuDescription: "",
+    binName: "",
+    binLocation: "",
+    binSKU: "",
+    palletSKU: "",
     palletQuantity: 0,
-    quarantineSKU: '',
-    quarantineReason: '',
+    quarantineSKU: "",
+    quarantineReason: "",
     quarantineQuantity: 0,
-    quarantineLocation: '',
+    quarantineLocation: "",
   });
 
   // Fetch SKUs and Inventory Data
   useEffect(() => {
     const fetchData = async () => {
-      const { data: skuData } = await supabase.from('skus').select('id, name');
+      const { data: skuData } = await supabase.from("skus").select("id, name");
       setSKUs(skuData || []);
 
-      const { data: inventoryData } = await supabase
-        .from('skus')
-        .select(`
+      const { data: inventoryData } = await supabase.from("skus").select(`
           id, name, code, category, description,
           bins (name, location),
           pallets (quantity),
           quarantine (reason, quantity, location)
         `);
 
-      const uniqueCategories = [...new Set(inventoryData?.map((item: any) => item.category))];
-      const uniqueLocations = [...new Set(inventoryData?.flatMap((item: any) => [
-        ...item.bins?.map((bin: any) => bin.location) || [],
-        ...item.quarantine?.map((q: any) => q.location) || [],
-      ]))];
+      const uniqueCategories = [
+        ...new Set(inventoryData?.map((item: any) => item.category)),
+      ];
+      const uniqueLocations = [
+        ...new Set(
+          inventoryData?.flatMap((item: any) => [
+            ...(item.bins?.map((bin: any) => bin.location) || []),
+            ...(item.quarantine?.map((q: any) => q.location) || []),
+          ])
+        ),
+      ];
 
       setInventory(inventoryData || []);
       setFilteredInventory(inventoryData || []);
@@ -67,18 +73,26 @@ export function StockContent() {
   useEffect(() => {
     let filtered = inventory;
     if (searchTerm) {
-      filtered = filtered.filter((item) =>
-        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.code.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.code.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
     if (filterCategory) {
-      filtered = filtered.filter((item) => item.category.toLowerCase() === filterCategory.toLowerCase());
+      filtered = filtered.filter(
+        (item) => item.category.toLowerCase() === filterCategory.toLowerCase()
+      );
     }
     if (filterLocation) {
-      filtered = filtered.filter((item) =>
-        item.bins?.some((bin: any) => bin.location.toLowerCase().includes(filterLocation.toLowerCase())) ||
-        item.quarantine?.some((q: any) => q.location.toLowerCase().includes(filterLocation.toLowerCase()))
+      filtered = filtered.filter(
+        (item) =>
+          item.bins?.some((bin: any) =>
+            bin.location.toLowerCase().includes(filterLocation.toLowerCase())
+          ) ||
+          item.quarantine?.some((q: any) =>
+            q.location.toLowerCase().includes(filterLocation.toLowerCase())
+          )
       );
     }
     setFilteredInventory(filtered);
@@ -87,30 +101,37 @@ export function StockContent() {
   // Handle Form Submission
   const handleFormSubmit = async (table: string, data: any) => {
     const { error } = await supabase.from(table).insert(data);
-    if (error:any) alert(`Error: ${error.message}`);
-    else alert('Success! Entry added.');
-    setFormData({ ...formData, ...Object.keys(data).reduce((acc, key) => ({ ...acc, [key]: '' }), {}) });
+    if (error instanceof Error) alert(`Error: ${error.message}`);
+    else alert("Success! Entry added.");
+    setFormData({
+      ...formData,
+      ...Object.keys(data).reduce((acc, key) => ({ ...acc, [key]: "" }), {}),
+    });
   };
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
       {/* Navigation */}
       <nav className="flex flex-wrap gap-2 mb-6">
-        {['inventory', 'skus', 'bins', 'pallets', 'quarantine'].map((section) => (
-          <button
-            key={section}
-            onClick={() => setActiveSection(section as any)}
-            className={`px-4 py-2 rounded transition ${
-              activeSection === section ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-blue-300'
-            }`}
-          >
-            {section.toUpperCase()}
-          </button>
-        ))}
+        {["inventory", "skus", "bins", "pallets", "quarantine"].map(
+          (section) => (
+            <button
+              key={section}
+              onClick={() => setActiveSection(section as any)}
+              className={`px-4 py-2 rounded transition ${
+                activeSection === section
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 hover:bg-blue-300"
+              }`}
+            >
+              {section.toUpperCase()}
+            </button>
+          )
+        )}
       </nav>
 
       {/* Inventory Viewer */}
-      {activeSection === 'inventory' && (
+      {activeSection === "inventory" && (
         <div>
           <h1 className="text-2xl font-bold mb-4">View Inventory</h1>
           <div className="flex flex-wrap gap-2 mb-4">
@@ -164,13 +185,19 @@ export function StockContent() {
                   <td className="border p-3">{item.code}</td>
                   <td className="border p-3">{item.category}</td>
                   <td className="border p-3">
-                    {item.bins?.map((bin: any) => `${bin.name} (${bin.location})`).join(', ') || 'N/A'}
+                    {item.bins
+                      ?.map((bin: any) => `${bin.name} (${bin.location})`)
+                      .join(", ") || "N/A"}
                   </td>
                   <td className="border p-3">
-                    {item.pallets?.map((pallet: any) => pallet.quantity).join(', ') || 'N/A'}
+                    {item.pallets
+                      ?.map((pallet: any) => pallet.quantity)
+                      .join(", ") || "N/A"}
                   </td>
                   <td className="border p-3">
-                    {item.quarantine?.map((q: any) => `${q.reason} (${q.quantity})`).join(', ') || 'N/A'}
+                    {item.quarantine
+                      ?.map((q: any) => `${q.reason} (${q.quantity})`)
+                      .join(", ") || "N/A"}
                   </td>
                 </tr>
               ))}
@@ -180,7 +207,7 @@ export function StockContent() {
       )}
 
       {/* SKUs Section */}
-      {activeSection === 'skus' && (
+      {activeSection === "skus" && (
         <div>
           <h1 className="text-2xl font-bold mb-4">Manage SKUs</h1>
           <input
@@ -188,31 +215,39 @@ export function StockContent() {
             placeholder="SKU Name"
             className="border p-2 rounded w-full mb-2"
             value={formData.skuName}
-            onChange={(e) => setFormData({ ...formData, skuName: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, skuName: e.target.value })
+            }
           />
           <input
             type="text"
             placeholder="SKU Code"
             className="border p-2 rounded w-full mb-2"
             value={formData.skuCode}
-            onChange={(e) => setFormData({ ...formData, skuCode: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, skuCode: e.target.value })
+            }
           />
           <input
             type="text"
             placeholder="Category"
             className="border p-2 rounded w-full mb-2"
             value={formData.skuCategory}
-            onChange={(e) => setFormData({ ...formData, skuCategory: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, skuCategory: e.target.value })
+            }
           />
           <textarea
             placeholder="Description"
             className="border p-2 rounded w-full mb-2"
             value={formData.skuDescription}
-            onChange={(e) => setFormData({ ...formData, skuDescription: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, skuDescription: e.target.value })
+            }
           ></textarea>
           <button
             onClick={() =>
-              handleFormSubmit('skus', {
+              handleFormSubmit("skus", {
                 name: formData.skuName,
                 code: formData.skuCode,
                 category: formData.skuCategory,
@@ -227,7 +262,7 @@ export function StockContent() {
       )}
 
       {/* Bins Section */}
-      {activeSection === 'bins' && (
+      {activeSection === "bins" && (
         <div>
           <h1 className="text-2xl font-bold mb-4">Manage Bins</h1>
           <input
@@ -235,19 +270,25 @@ export function StockContent() {
             placeholder="Bin Name"
             className="border p-2 rounded w-full mb-2"
             value={formData.binName}
-            onChange={(e) => setFormData({ ...formData, binName: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, binName: e.target.value })
+            }
           />
           <input
             type="text"
             placeholder="Bin Location"
             className="border p-2 rounded w-full mb-2"
             value={formData.binLocation}
-            onChange={(e) => setFormData({ ...formData, binLocation: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, binLocation: e.target.value })
+            }
           />
           <select
             className="border p-2 rounded w-full mb-2"
             value={formData.binSKU}
-            onChange={(e) => setFormData({ ...formData, binSKU: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, binSKU: e.target.value })
+            }
           >
             <option value="">Select SKU</option>
             {skus.map((sku) => (
@@ -258,7 +299,7 @@ export function StockContent() {
           </select>
           <button
             onClick={() =>
-              handleFormSubmit('bins', {
+              handleFormSubmit("bins", {
                 name: formData.binName,
                 location: formData.binLocation,
                 sku_id: formData.binSKU,
@@ -272,13 +313,15 @@ export function StockContent() {
       )}
 
       {/* Pallets Section */}
-      {activeSection === 'pallets' && (
+      {activeSection === "pallets" && (
         <div>
           <h1 className="text-2xl font-bold mb-4">Allocate Pallets</h1>
           <select
             className="border p-2 rounded w-full mb-2"
             value={formData.palletSKU}
-            onChange={(e) => setFormData({ ...formData, palletSKU: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, palletSKU: e.target.value })
+            }
           >
             <option value="">Select SKU</option>
             {skus.map((sku) => (
@@ -292,11 +335,16 @@ export function StockContent() {
             placeholder="Quantity"
             className="border p-2 rounded w-full mb-2"
             value={formData.palletQuantity}
-            onChange={(e) => setFormData({ ...formData, palletQuantity: Number(e.target.value) })}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                palletQuantity: Number(e.target.value),
+              })
+            }
           />
           <button
             onClick={() =>
-              handleFormSubmit('pallets', {
+              handleFormSubmit("pallets", {
                 sku_id: formData.palletSKU,
                 quantity: formData.palletQuantity,
               })
@@ -309,13 +357,15 @@ export function StockContent() {
       )}
 
       {/* Quarantine Section */}
-      {activeSection === 'quarantine' && (
+      {activeSection === "quarantine" && (
         <div>
           <h1 className="text-2xl font-bold mb-4">Manage Quarantine</h1>
           <select
             className="border p-2 rounded w-full mb-2"
             value={formData.quarantineSKU}
-            onChange={(e) => setFormData({ ...formData, quarantineSKU: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, quarantineSKU: e.target.value })
+            }
           >
             <option value="">Select SKU</option>
             {skus.map((sku) => (
@@ -328,25 +378,34 @@ export function StockContent() {
             placeholder="Reason"
             className="border p-2 rounded w-full mb-2"
             value={formData.quarantineReason}
-            onChange={(e) => setFormData({ ...formData, quarantineReason: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, quarantineReason: e.target.value })
+            }
           ></textarea>
           <input
             type="number"
             placeholder="Quantity"
             className="border p-2 rounded w-full mb-2"
             value={formData.quarantineQuantity}
-            onChange={(e) => setFormData({ ...formData, quarantineQuantity: Number(e.target.value) })}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                quarantineQuantity: Number(e.target.value),
+              })
+            }
           />
           <input
             type="text"
             placeholder="Location"
             className="border p-2 rounded w-full mb-2"
             value={formData.quarantineLocation}
-            onChange={(e) => setFormData({ ...formData, quarantineLocation: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, quarantineLocation: e.target.value })
+            }
           />
           <button
             onClick={() =>
-              handleFormSubmit('quarantine', {
+              handleFormSubmit("quarantine", {
                 sku_id: formData.quarantineSKU,
                 reason: formData.quarantineReason,
                 quantity: formData.quarantineQuantity,

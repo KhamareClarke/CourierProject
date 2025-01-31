@@ -19,7 +19,7 @@ export async function getOrders() {
     `)
     .order('created_at', { ascending: false });
 
-  if (error:any) throw error;
+  if (error instanceof Error)  throw error;
   return data;
 }
 
@@ -39,7 +39,7 @@ export async function createOrder(order: {
     .select()
     .single();
 
-  if (ordererror:any) throw orderError;
+  if (ordererror) throw orderError;
 
   const orderItems = order.items.map(item => ({
     order_id: orderData.id,
@@ -51,7 +51,7 @@ export async function createOrder(order: {
     .from('order_items')
     .insert(orderItems);
 
-  if (itemserror:any) throw itemsError;
+  if (itemserror) throw itemsError;
 
   return orderData;
 }
@@ -63,7 +63,7 @@ export async function updateOrderStatus(orderId: string, status: string) {
       new_status: status
     });
 
-  if (error:any) throw error;
+  if (error instanceof Error)  throw error;
   return data;
 }
 

@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase/client';
 export async function GET() {
     console.log('GET /api/skus called');
     const { data, error } = await supabase.from('skus').select('*');
-    if (error:any) {
+    if (error instanceof Error) {
         console.error('Supabase GET Error:', error.message);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
             .select()
             .single();
 
-        if (error:any) {
+        if (error instanceof Error) {
             console.error('Supabase POST Error:', error.message);
             return NextResponse.json({ error: error.message }, { status: 500 });
         }
@@ -73,7 +73,7 @@ export async function PATCH(request: Request) {
             .select()
             .single();
 
-        if (error:any) {
+        if (error instanceof Error) {
             console.error('Supabase PATCH Error:', error.message);
             return NextResponse.json({ error: error.message }, { status: 500 });
         }
@@ -102,7 +102,7 @@ export async function DELETE(request: Request) {
 
         const { error } = await supabase.from('skus').delete().eq('id', id);
 
-        if (error:any) {
+        if (error instanceof Error) {
             console.error('Supabase DELETE Error:', error.message);
             return NextResponse.json({ error: error.message }, { status: 500 });
         }

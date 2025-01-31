@@ -15,7 +15,7 @@ export async function getSKUs() {
             )
         `);
 
-    if (error:any) throw error;
+    if (error instanceof Error)  throw error;
     return data;
 }
 
@@ -49,7 +49,7 @@ export async function createSKU(sku: {
         .select()
         .single();
 
-    if (error:any) throw error;
+    if (error instanceof Error)  throw error;
     return data;
 }
 
@@ -70,7 +70,7 @@ export async function updateSKU(
         .select()
         .single();
 
-    if (error:any) throw error;
+    if (error instanceof Error)  throw error;
     return data;
 }
 
@@ -82,7 +82,7 @@ export async function deleteSKU(id: string) {
         .delete()
         .eq('sku_id', id);
 
-    if (inventoryerror:any) throw inventoryError;
+    if (inventoryerror) throw inventoryError;
 
     // Delete related transactions
     const { error: transactionsError } = await supabase
@@ -90,7 +90,7 @@ export async function deleteSKU(id: string) {
         .delete()
         .eq('sku_id', id);
 
-    if (transactionserror:any) throw transactionsError;
+    if (transactionserror) throw transactionsError;
 
     // Delete the SKU itself
     const { error } = await supabase
@@ -98,5 +98,5 @@ export async function deleteSKU(id: string) {
         .delete()
         .eq('id', id);
 
-    if (error:any) throw error;
+    if (error instanceof Error)  throw error;
 }

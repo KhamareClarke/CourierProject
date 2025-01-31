@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       .select()
       .single();
 
-    if (error:any) {
+    if (error instanceof Error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 

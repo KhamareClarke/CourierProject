@@ -1,23 +1,23 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { FileText, Download, Loader2 } from 'lucide-react';
-import { format } from 'date-fns';
+} from "@/components/ui/select";
+import { FileText, Download, Loader2 } from "lucide-react";
+import { format } from "date-fns";
 
 interface ReportGeneratorProps {
   warehouseData: any[];
@@ -25,72 +25,76 @@ interface ReportGeneratorProps {
   orderStatusData: any[];
 }
 
-export function ReportGenerator({ warehouseData, monthlyOrderData, orderStatusData }: ReportGeneratorProps) {
-  const [reportType, setReportType] = useState<string>('');
+export function ReportGenerator({
+  warehouseData,
+  monthlyOrderData,
+  orderStatusData,
+}: ReportGeneratorProps) {
+  const [reportType, setReportType] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
 
   const generateReport = async () => {
     setIsGenerating(true);
-    
+
     try {
       // Simulate report generation delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
       // Prepare report data based on type
-      let reportData = '';
-      const timestamp = format(new Date(), 'yyyy-MM-dd_HH-mm');
-      
+      let reportData = "";
+      const timestamp = format(new Date(), "yyyy-MM-dd_HH-mm");
+
       switch (reportType) {
-        case 'revenue':
+        case "revenue":
           reportData = generateRevenueReport();
           break;
-        case 'warehouse':
+        case "warehouse":
           reportData = generateWarehouseReport();
           break;
-        case 'courier':
+        case "courier":
           reportData = generateCourierReport();
           break;
         default:
-          throw new Error('Invalid report type');
+          throw new Error("Invalid report type");
       }
 
       // Create and download the report file
-      const blob = new Blob([reportData], { type: 'text/csv' });
+      const blob = new Blob([reportData], { type: "text/csv" });
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
       a.download = `wcms_${reportType}_report_${timestamp}.csv`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-    } catch (error:any) {
-      console.error('Error generating report:', error:any);
+    } catch (error) {
+      console.error("Error generating report:", error);
     } finally {
       setIsGenerating(false);
     }
   };
 
   const generateRevenueReport = () => {
-    let csv = 'Month,Orders,Revenue\n';
-    monthlyOrderData.forEach(data => {
+    let csv = "Month,Orders,Revenue\n";
+    monthlyOrderData.forEach((data) => {
       csv += `${data.month},${data.orders},${data.revenue}\n`;
     });
     return csv;
   };
 
   const generateWarehouseReport = () => {
-    let csv = 'Warehouse Name,Location,Monthly Revenue,Utilization %\n';
-    warehouseData.forEach(warehouse => {
+    let csv = "Warehouse Name,Location,Monthly Revenue,Utilization %\n";
+    warehouseData.forEach((warehouse) => {
       csv += `${warehouse.name},${warehouse.location},${warehouse.revenue},${warehouse.utilization}\n`;
     });
     return csv;
   };
 
   const generateCourierReport = () => {
-    let csv = 'Status,Count,Percentage\n';
+    let csv = "Status,Count,Percentage\n";
     const total = orderStatusData.reduce((sum, item) => sum + item.value, 0);
-    orderStatusData.forEach(status => {
+    orderStatusData.forEach((status) => {
       const percentage = ((status.value / total) * 100).toFixed(2);
       csv += `${status.name},${status.value},${percentage}%\n`;
     });
@@ -127,15 +131,16 @@ export function ReportGenerator({ warehouseData, monthlyOrderData, orderStatusDa
           <div className="space-y-2">
             <h3 className="text-sm font-medium">Report Preview</h3>
             <div className="p-4 bg-secondary rounded-lg">
-              {reportType === 'revenue' && (
+              {reportType === "revenue" && (
                 <p className="text-sm">
-                  Monthly revenue and order trends across all warehouses, including:
+                  Monthly revenue and order trends across all warehouses,
+                  including:
                   <br />• Monthly order volumes
                   <br />• Revenue figures
                   <br />• Growth trends
                 </p>
               )}
-              {reportType === 'warehouse' && (
+              {reportType === "warehouse" && (
                 <p className="text-sm">
                   Detailed warehouse performance metrics, including:
                   <br />• Utilization rates
@@ -143,7 +148,7 @@ export function ReportGenerator({ warehouseData, monthlyOrderData, orderStatusDa
                   <br />• Location analysis
                 </p>
               )}
-              {reportType === 'courier' && (
+              {reportType === "courier" && (
                 <p className="text-sm">
                   Courier and delivery performance stats, including:
                   <br />• Delivery status distribution
@@ -154,8 +159,8 @@ export function ReportGenerator({ warehouseData, monthlyOrderData, orderStatusDa
             </div>
           </div>
 
-          <Button 
-            className="w-full" 
+          <Button
+            className="w-full"
             onClick={generateReport}
             disabled={!reportType || isGenerating}
           >
