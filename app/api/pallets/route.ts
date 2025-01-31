@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(data, { status: 201 });
-  } catch (err) {
+  } catch (err:any) {
     return NextResponse.json({ error: 'Server Error' }, { status: 500 });
   }
 }

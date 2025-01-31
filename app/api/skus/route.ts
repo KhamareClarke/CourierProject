@@ -43,7 +43,7 @@ export async function POST(request: Request) {
 
         console.log('POST Data:', data);
         return NextResponse.json(data, { status: 201 });
-    } catch (err) {
+    } catch (err:any) {
         console.error('POST Exception:', err.message);
         return NextResponse.json({ error: 'Server Error' }, { status: 500 });
     }
@@ -80,7 +80,7 @@ export async function PATCH(request: Request) {
 
         console.log('PATCH Data:', data);
         return NextResponse.json(data, { status: 200 });
-    } catch (err) {
+    } catch (err:any) {
         console.error('PATCH Exception:', err.message);
         return NextResponse.json({ error: 'Server Error' }, { status: 500 });
     }
@@ -109,7 +109,7 @@ export async function DELETE(request: Request) {
 
         console.log('DELETE Success');
         return NextResponse.json({ success: true }, { status: 200 });
-    } catch (err) {
+    } catch (err:any) {
         console.error('DELETE Exception:', err.message);
         return NextResponse.json({ error: 'Server Error' }, { status: 500 });
     }
