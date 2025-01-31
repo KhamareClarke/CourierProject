@@ -87,7 +87,7 @@ export function StockContent() {
   // Handle Form Submission
   const handleFormSubmit = async (table: string, data: any) => {
     const { error } = await supabase.from(table).insert(data);
-    if (error) alert(`Error: ${error.message}`);
+    if (error:any) alert(`Error: ${error.message}`);
     else alert('Success! Entry added.');
     setFormData({ ...formData, ...Object.keys(data).reduce((acc, key) => ({ ...acc, [key]: '' }), {}) });
   };

@@ -1,26 +1,33 @@
-'use client';
+"use client";
 
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/accordion';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Loader2 } from 'lucide-react';
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Loader2 } from "lucide-react";
 
 const contactFormSchema = z.object({
-  subject: z.string().min(1, 'Subject is required'),
-  message: z.string().min(10, 'Message must be at least 10 characters'),
+  subject: z.string().min(1, "Subject is required"),
+  message: z.string().min(10, "Message must be at least 10 characters"),
 });
 
 export function HelpContent() {
@@ -28,26 +35,26 @@ export function HelpContent() {
   const form = useForm<z.infer<typeof contactFormSchema>>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
-      subject: '',
-      message: '',
+      subject: "",
+      message: "",
     },
   });
 
   const onSubmit = async (data: z.infer<typeof contactFormSchema>) => {
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       toast({
-        title: 'Support Request Sent',
-        description: 'We will get back to you within 24 hours.',
+        title: "Support Request Sent",
+        description: "We will get back to you within 24 hours.",
       });
       form.reset();
-    } catch (error) {
+    } catch (error: any) {
       toast({
-        title: 'Error',
-        description: 'Failed to send support request. Please try again.',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to send support request. Please try again.",
+        variant: "destructive",
       });
     }
   };
@@ -66,31 +73,45 @@ export function HelpContent() {
               <AccordionItem value="item-1">
                 <AccordionTrigger>How do I add a new product?</AccordionTrigger>
                 <AccordionContent>
-                  Navigate to the Products page and click the "Add Product" button in the top right corner. Fill in the required information including product name, quantity, and warehouse location. Click "Save" to add the product to inventory.
+                  Navigate to the Products page and click the "Add Product"
+                  button in the top right corner. Fill in the required
+                  information including product name, quantity, and warehouse
+                  location. Click "Save" to add the product to inventory.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-2">
                 <AccordionTrigger>How do I track orders?</AccordionTrigger>
                 <AccordionContent>
-                  Go to the Orders page where you can view all orders and their current status. Use the search bar to find specific orders, or filter by status. Click on an order to see detailed tracking information including delivery status and courier details.
+                  Go to the Orders page where you can view all orders and their
+                  current status. Use the search bar to find specific orders, or
+                  filter by status. Click on an order to see detailed tracking
+                  information including delivery status and courier details.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-3">
                 <AccordionTrigger>How do I manage couriers?</AccordionTrigger>
                 <AccordionContent>
-                  Visit the Couriers page to view and manage all courier assignments. You can assign orders to couriers using drag-and-drop or the assignment dialog. The map view shows real-time courier locations and delivery routes.
+                  Visit the Couriers page to view and manage all courier
+                  assignments. You can assign orders to couriers using
+                  drag-and-drop or the assignment dialog. The map view shows
+                  real-time courier locations and delivery routes.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-4">
                 <AccordionTrigger>How do I update my profile?</AccordionTrigger>
                 <AccordionContent>
-                  Click your profile icon in the top right corner and select "My Profile". Click the "Edit Profile" button to modify your information. Don't forget to save your changes.
+                  Click your profile icon in the top right corner and select "My
+                  Profile". Click the "Edit Profile" button to modify your
+                  information. Don't forget to save your changes.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-5">
-                <AccordionTrigger>What keyboard shortcuts are available?</AccordionTrigger>
+                <AccordionTrigger>
+                  What keyboard shortcuts are available?
+                </AccordionTrigger>
                 <AccordionContent>
-                  Press Alt + / to view all available keyboard shortcuts. Common shortcuts include:
+                  Press Alt + / to view all available keyboard shortcuts. Common
+                  shortcuts include:
                   <ul className="list-disc pl-6 mt-2 space-y-1">
                     <li>Alt + D: Go to Dashboard</li>
                     <li>Alt + P: Go to Products</li>
@@ -109,7 +130,10 @@ export function HelpContent() {
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
                 <FormField
                   control={form.control}
                   name="subject"
@@ -117,7 +141,10 @@ export function HelpContent() {
                     <FormItem>
                       <FormLabel>Subject</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter the subject of your inquiry" {...field} />
+                        <Input
+                          placeholder="Enter the subject of your inquiry"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -140,14 +167,18 @@ export function HelpContent() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={form.formState.isSubmitting}
+                >
                   {form.formState.isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Sending...
                     </>
                   ) : (
-                    'Send Message'
+                    "Send Message"
                   )}
                 </Button>
               </form>

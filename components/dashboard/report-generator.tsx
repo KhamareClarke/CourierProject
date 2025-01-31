@@ -64,8 +64,8 @@ export function ReportGenerator({ warehouseData, monthlyOrderData, orderStatusDa
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-    } catch (error) {
-      console.error('Error generating report:', error);
+    } catch (error:any) {
+      console.error('Error generating report:', error:any);
     } finally {
       setIsGenerating(false);
     }

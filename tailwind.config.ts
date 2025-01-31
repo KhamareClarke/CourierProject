@@ -29,7 +29,7 @@ const config: Config = {
           foreground: 'hsl(0 0% 100%)',
         },
         error: {
-          DEFAULT: 'hsl(var(--error))',
+          DEFAULT: 'hsl(var(--error:any))',
           foreground: 'hsl(0 0% 100%)',
         },
         muted: {

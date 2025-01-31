@@ -16,8 +16,8 @@ const AddPalletForm: React.FC = () => {
         if (!response.ok) throw new Error('Failed to fetch SKUs');
         const data = await response.json();
         setSkus(data);
-      } catch (error) {
-        console.error('Error fetching SKUs:', error);
+      } catch (error:any) {
+        console.error('Error fetching SKUs:', error:any);
       }
     };
 
@@ -48,8 +48,8 @@ const AddPalletForm: React.FC = () => {
           setMessage('');
         }, 3000);
       }
-    } catch (error) {
-      console.error('Error adding pallet:', error);
+    } catch (error:any) {
+      console.error('Error adding pallet:', error:any);
     }
   };
 

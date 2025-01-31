@@ -1,45 +1,52 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-import { 
-  Loader2, 
-  BookOpen, 
-  Video, 
-  Users, 
-  MessageSquare, 
+} from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import {
+  Loader2,
+  BookOpen,
+  Video,
+  Users,
+  MessageSquare,
   HelpCircle,
   ChevronRight,
-  Send
-} from 'lucide-react';
+  Send,
+} from "lucide-react";
 
 const feedbackFormSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Please enter a valid email'),
-  category: z.string().min(1, 'Please select a category'),
-  message: z.string().min(10, 'Please provide more details'),
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Please enter a valid email"),
+  category: z.string().min(1, "Please select a category"),
+  message: z.string().min(10, "Please provide more details"),
 });
 
 export function TrainingContent() {
@@ -55,19 +62,19 @@ export function TrainingContent() {
     try {
       setIsSubmitting(true);
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
       toast({
-        title: 'Feedback Submitted',
-        description: 'Thank you for your feedback. We will review it shortly.',
+        title: "Feedback Submitted",
+        description: "Thank you for your feedback. We will review it shortly.",
       });
       setShowFeedbackDialog(false);
       form.reset();
-    } catch (error) {
+    } catch (error: any) {
       toast({
-        title: 'Error',
-        description: 'Failed to submit feedback. Please try again.',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to submit feedback. Please try again.",
+        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
@@ -269,7 +276,10 @@ export function TrainingContent() {
               <DialogTitle>Submit Feedback</DialogTitle>
             </DialogHeader>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
                 <FormField
                   control={form.control}
                   name="name"
@@ -290,7 +300,11 @@ export function TrainingContent() {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter your email" type="email" {...field} />
+                        <Input
+                          placeholder="Enter your email"
+                          type="email"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -302,17 +316,26 @@ export function TrainingContent() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Category</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select a category" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="training">Training Request</SelectItem>
-                          <SelectItem value="documentation">Documentation Feedback</SelectItem>
+                          <SelectItem value="training">
+                            Training Request
+                          </SelectItem>
+                          <SelectItem value="documentation">
+                            Documentation Feedback
+                          </SelectItem>
                           <SelectItem value="support">Support Issue</SelectItem>
-                          <SelectItem value="feature">Feature Request</SelectItem>
+                          <SelectItem value="feature">
+                            Feature Request
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -336,14 +359,18 @@ export function TrainingContent() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isSubmitting}
+                >
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Submitting...
                     </>
                   ) : (
-                    'Submit Feedback'
+                    "Submit Feedback"
                   )}
                 </Button>
               </form>

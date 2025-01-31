@@ -1,67 +1,77 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { DatePickerWithRange } from '@/components/ui/date-range-picker';
-import { useToast } from '@/hooks/use-toast';
-import { FileText, Download, Loader2, BarChart2, TrendingUp, Truck, Package } from 'lucide-react';
-import { format } from 'date-fns';
+} from "@/components/ui/select";
+import { DatePickerWithRange } from "@/components/ui/date-range-picker";
+import { useToast } from "@/hooks/use-toast";
+import {
+  FileText,
+  Download,
+  Loader2,
+  BarChart2,
+  TrendingUp,
+  Truck,
+  Package,
+} from "lucide-react";
+import { format } from "date-fns";
 
 // Mock data for reports
 const mockReports = [
   {
-    id: 'R001',
-    name: 'Monthly Revenue Report',
-    type: 'revenue',
+    id: "R001",
+    name: "Monthly Revenue Report",
+    type: "revenue",
     date: new Date(2024, 2, 15),
-    size: '2.4 MB'
+    size: "2.4 MB",
   },
   {
-    id: 'R002',
-    name: 'Warehouse Utilization Report',
-    type: 'warehouse',
+    id: "R002",
+    name: "Warehouse Utilization Report",
+    type: "warehouse",
     date: new Date(2024, 2, 14),
-    size: '1.8 MB'
+    size: "1.8 MB",
   },
   {
-    id: 'R003',
-    name: 'Courier Performance Report',
-    type: 'courier',
+    id: "R003",
+    name: "Courier Performance Report",
+    type: "courier",
     date: new Date(2024, 2, 13),
-    size: '3.1 MB'
+    size: "3.1 MB",
   },
   {
-    id: 'R004',
-    name: 'Inventory Status Report',
-    type: 'inventory',
+    id: "R004",
+    name: "Inventory Status Report",
+    type: "inventory",
     date: new Date(2024, 2, 12),
-    size: '4.2 MB'
-  }
+    size: "4.2 MB",
+  },
 ];
 
 export function ReportsContent() {
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
-  const [selectedReport, setSelectedReport] = useState<string>('');
-  const [dateRange, setDateRange] = useState<{ from: Date; to: Date } | undefined>();
-  const [reportFormat, setReportFormat] = useState<string>('csv');
+  const [selectedReport, setSelectedReport] = useState<string>("");
+  const [dateRange, setDateRange] = useState<
+    { from: Date; to: Date } | undefined
+  >();
+  const [reportFormat, setReportFormat] = useState<string>("csv");
 
   const handleGenerateReport = async () => {
     if (!selectedReport || !dateRange?.from || !dateRange?.to) {
       toast({
-        title: 'Missing Information',
-        description: 'Please select a report type and date range.',
-        variant: 'destructive',
+        title: "Missing Information",
+        description: "Please select a report type and date range.",
+        variant: "destructive",
       });
       return;
     }
@@ -69,19 +79,22 @@ export function ReportsContent() {
     setIsGenerating(true);
     try {
       // Simulate report generation
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      const fileName = `wcms_${selectedReport}_${format(dateRange.from, 'yyyyMMdd')}_${format(dateRange.to, 'yyyyMMdd')}.${reportFormat}`;
-      
+      const fileName = `wcms_${selectedReport}_${format(
+        dateRange.from,
+        "yyyyMMdd"
+      )}_${format(dateRange.to, "yyyyMMdd")}.${reportFormat}`;
+
       toast({
-        title: 'Report Generated',
+        title: "Report Generated",
         description: `${fileName} has been generated successfully.`,
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
-        title: 'Error',
-        description: 'Failed to generate report. Please try again.',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to generate report. Please try again.",
+        variant: "destructive",
       });
     } finally {
       setIsGenerating(false);
@@ -90,13 +103,13 @@ export function ReportsContent() {
 
   const getReportIcon = (type: string) => {
     switch (type) {
-      case 'revenue':
+      case "revenue":
         return <TrendingUp className="h-4 w-4" />;
-      case 'warehouse':
+      case "warehouse":
         return <BarChart2 className="h-4 w-4" />;
-      case 'courier':
+      case "courier":
         return <Truck className="h-4 w-4" />;
-      case 'inventory':
+      case "inventory":
         return <Package className="h-4 w-4" />;
       default:
         return <FileText className="h-4 w-4" />;
@@ -121,15 +134,24 @@ export function ReportsContent() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Report Type</label>
-                <Select value={selectedReport} onValueChange={setSelectedReport}>
+                <Select
+                  value={selectedReport}
+                  onValueChange={setSelectedReport}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select report type" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="revenue">Revenue Report</SelectItem>
-                    <SelectItem value="warehouse">Warehouse Utilization Report</SelectItem>
-                    <SelectItem value="courier">Courier Performance Report</SelectItem>
-                    <SelectItem value="inventory">Inventory Status Report</SelectItem>
+                    <SelectItem value="warehouse">
+                      Warehouse Utilization Report
+                    </SelectItem>
+                    <SelectItem value="courier">
+                      Courier Performance Report
+                    </SelectItem>
+                    <SelectItem value="inventory">
+                      Inventory Status Report
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -153,10 +175,15 @@ export function ReportsContent() {
                 </Select>
               </div>
 
-              <Button 
-                className="w-full" 
+              <Button
+                className="w-full"
                 onClick={handleGenerateReport}
-                disabled={isGenerating || !selectedReport || !dateRange?.from || !dateRange?.to}
+                disabled={
+                  isGenerating ||
+                  !selectedReport ||
+                  !dateRange?.from ||
+                  !dateRange?.to
+                }
               >
                 {isGenerating ? (
                   <>
@@ -181,7 +208,7 @@ export function ReportsContent() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {mockReports.map(report => (
+                {mockReports.map((report) => (
                   <div
                     key={report.id}
                     className="flex items-center justify-between p-4 rounded-lg border hover:bg-accent/50 transition-colors"
@@ -191,7 +218,8 @@ export function ReportsContent() {
                       <div>
                         <h3 className="font-medium">{report.name}</h3>
                         <p className="text-sm text-muted-foreground">
-                          Generated on {format(report.date, 'MMM d, yyyy')} • {report.size}
+                          Generated on {format(report.date, "MMM d, yyyy")} •{" "}
+                          {report.size}
                         </p>
                       </div>
                     </div>

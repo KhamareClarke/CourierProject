@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { TrainingContent } from './training-content';
-import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+} from "@/components/ui/dialog";
+import { TrainingContent } from "./training-content";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
 export function PricingContent() {
   const { toast } = useToast();
@@ -21,16 +21,16 @@ export function PricingContent() {
   const handleRequestQuote = async () => {
     try {
       setIsGeneratingQuote(true);
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
       toast({
-        title: 'Quote Generated',
-        description: 'Your custom quote has been sent to your email.',
+        title: "Quote Generated",
+        description: "Your custom quote has been sent to your email.",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
-        title: 'Error',
-        description: 'Failed to generate quote. Please try again.',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to generate quote. Please try again.",
+        variant: "destructive",
       });
     } finally {
       setIsGeneratingQuote(false);
@@ -54,7 +54,9 @@ export function PricingContent() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">£10,000</div>
-            <p className="text-sm text-muted-foreground">Core WMS functionality</p>
+            <p className="text-sm text-muted-foreground">
+              Core WMS functionality
+            </p>
           </CardContent>
         </Card>
 
@@ -64,7 +66,9 @@ export function PricingContent() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">£5,000</div>
-            <p className="text-sm text-muted-foreground">Portal development & setup</p>
+            <p className="text-sm text-muted-foreground">
+              Portal development & setup
+            </p>
           </CardContent>
         </Card>
 
@@ -102,7 +106,7 @@ export function PricingContent() {
               Generating Quote...
             </>
           ) : (
-            'Request Full Quote'
+            "Request Full Quote"
           )}
         </Button>
       </div>

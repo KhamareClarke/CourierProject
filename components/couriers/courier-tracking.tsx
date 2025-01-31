@@ -20,7 +20,7 @@ export function TrackingContent() {
       const { data: courierData, error: courierError } = await supabase
         .from("couriers")
         .select("*");
-      if (courierError)
+      if (couriererror:any)
         console.error("Error fetching couriers:", courierError.message);
       setCouriers(courierData || []);
 
@@ -30,7 +30,7 @@ export function TrackingContent() {
         .select("id, status, quantity, delivery_date")
         .in("status", ["Pending", "Shipped"]);
 
-      if (orderError)
+      if (ordererror:any)
         console.error("Error fetching orders:", orderError.message);
       else setOrders(orderData || []);
 
@@ -41,7 +41,7 @@ export function TrackingContent() {
           "id, status, assigned_at, orders(id, status), couriers(id, name)"
         );
 
-      if (assignmentError)
+      if (assignmenterror:any)
         console.error("Error fetching assignments:", assignmentError.message);
       setAssignments(assignmentData || []);
     };

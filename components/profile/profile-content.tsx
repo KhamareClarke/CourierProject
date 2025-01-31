@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -12,16 +12,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
 const profileFormSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Please enter a valid email'),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email"),
   role: z.string(),
   phone: z.string().optional(),
   location: z.string().optional(),
@@ -30,11 +30,11 @@ const profileFormSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 const defaultValues: Partial<ProfileFormValues> = {
-  name: 'John Doe',
-  email: 'john.doe@example.com',
-  role: 'Administrator',
-  phone: '+44 123 456 7890',
-  location: 'London, UK',
+  name: "John Doe",
+  email: "john.doe@example.com",
+  role: "Administrator",
+  phone: "+44 123 456 7890",
+  location: "London, UK",
 };
 
 export function ProfileContent() {
@@ -51,18 +51,18 @@ export function ProfileContent() {
     try {
       setIsLoading(true);
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       toast({
-        title: 'Profile Updated',
-        description: 'Your profile has been successfully updated.',
+        title: "Profile Updated",
+        description: "Your profile has been successfully updated.",
       });
       setIsEditing(false);
-    } catch (error) {
+    } catch (error: any) {
       toast({
-        title: 'Error',
-        description: 'Failed to update profile. Please try again.',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to update profile. Please try again.",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -91,7 +91,10 @@ export function ProfileContent() {
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
                 <div className="grid gap-4 md:grid-cols-2">
                   <FormField
                     control={form.control}
@@ -100,7 +103,10 @@ export function ProfileContent() {
                       <FormItem>
                         <FormLabel>Name</FormLabel>
                         <FormControl>
-                          <Input {...field} disabled={!isEditing || isLoading} />
+                          <Input
+                            {...field}
+                            disabled={!isEditing || isLoading}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -114,7 +120,10 @@ export function ProfileContent() {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input {...field} disabled={!isEditing || isLoading} />
+                          <Input
+                            {...field}
+                            disabled={!isEditing || isLoading}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -128,7 +137,10 @@ export function ProfileContent() {
                       <FormItem>
                         <FormLabel>Phone</FormLabel>
                         <FormControl>
-                          <Input {...field} disabled={!isEditing || isLoading} />
+                          <Input
+                            {...field}
+                            disabled={!isEditing || isLoading}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -142,7 +154,10 @@ export function ProfileContent() {
                       <FormItem>
                         <FormLabel>Location</FormLabel>
                         <FormControl>
-                          <Input {...field} disabled={!isEditing || isLoading} />
+                          <Input
+                            {...field}
+                            disabled={!isEditing || isLoading}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -185,7 +200,7 @@ export function ProfileContent() {
                             Saving...
                           </>
                         ) : (
-                          'Save Changes'
+                          "Save Changes"
                         )}
                       </Button>
                     </>

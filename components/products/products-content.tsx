@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -8,14 +8,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,29 +26,33 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { ProductForm } from './product-form';
-import { Search, Plus, Pencil, Trash2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+} from "@/components/ui/select";
+import { ProductForm } from "./product-form";
+import { Search, Plus, Pencil, Trash2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 // Mock data
 const mockProducts = Array.from({ length: 50 }, (_, i) => ({
-  id: `P${(i + 1).toString().padStart(5, '0')}`,
+  id: `P${(i + 1).toString().padStart(5, "0")}`,
   name: `Product ${i + 1}`,
-  category: ['Electronics', 'Clothing', 'Books', 'Home & Garden', 'Sports'][Math.floor(Math.random() * 5)],
+  category: ["Electronics", "Clothing", "Books", "Home & Garden", "Sports"][
+    Math.floor(Math.random() * 5)
+  ],
   price: Math.floor(Math.random() * 1000),
   quantity: Math.floor(Math.random() * 1000),
-  location: ['London', 'Manchester', 'Birmingham'][Math.floor(Math.random() * 3)],
-  condition: ['New', 'Used', 'Refurbished'][Math.floor(Math.random() * 3)],
+  location: ["London", "Manchester", "Birmingham"][
+    Math.floor(Math.random() * 3)
+  ],
+  condition: ["New", "Used", "Refurbished"][Math.floor(Math.random() * 3)],
 }));
 
 const ITEMS_PER_PAGE = 10;
@@ -57,9 +61,9 @@ export function ProductsContent() {
   const { toast } = useToast();
   const [products, setProducts] = useState(mockProducts);
   const [currentPage, setCurrentPage] = useState(1);
-  const [search, setSearch] = useState('');
-  const [warehouseFilter, setWarehouseFilter] = useState('all');
-  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [search, setSearch] = useState("");
+  const [warehouseFilter, setWarehouseFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const [deleteProductId, setDeleteProductId] = useState<string | null>(null);
   const [editingProduct, setEditingProduct] = useState<any | null>(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -68,26 +72,26 @@ export function ProductsContent() {
   // Keyboard shortcut for adding new product
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.altKey && e.key === 'n') {
+      if (e.altKey && e.key === "n") {
         setShowAddDialog(true);
       }
     };
 
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
   }, []);
 
   // Filter products
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = 
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch =
       product.name.toLowerCase().includes(search.toLowerCase()) ||
       product.id.toLowerCase().includes(search.toLowerCase());
-    
-    const matchesWarehouse = 
-      warehouseFilter === 'all' || product.location === warehouseFilter;
-    
-    const matchesCategory = 
-      categoryFilter === 'all' || product.category === categoryFilter;
+
+    const matchesWarehouse =
+      warehouseFilter === "all" || product.location === warehouseFilter;
+
+    const matchesCategory =
+      categoryFilter === "all" || product.category === categoryFilter;
 
     return matchesSearch && matchesWarehouse && matchesCategory;
   });
@@ -103,25 +107,25 @@ export function ProductsContent() {
     try {
       setIsLoading(true);
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       setProducts([
         ...products,
-        { 
+        {
           ...newProduct,
-          id: `P${(products.length + 1).toString().padStart(5, '0')}`,
-        }
+          id: `P${(products.length + 1).toString().padStart(5, "0")}`,
+        },
       ]);
       setShowAddDialog(false);
       toast({
-        title: 'Product Added',
-        description: 'The product has been successfully added.',
+        title: "Product Added",
+        description: "The product has been successfully added.",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
-        title: 'Error',
-        description: 'Failed to add product. Please try again.',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to add product. Please try again.",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -132,21 +136,21 @@ export function ProductsContent() {
     try {
       setIsLoading(true);
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setProducts(products.map(p => 
-        p.id === updatedProduct.id ? updatedProduct : p
-      ));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      setProducts(
+        products.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
+      );
       setEditingProduct(null);
       toast({
-        title: 'Product Updated',
-        description: 'The product has been successfully updated.',
+        title: "Product Updated",
+        description: "The product has been successfully updated.",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
-        title: 'Error',
-        description: 'Failed to update product. Please try again.',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to update product. Please try again.",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -158,19 +162,19 @@ export function ProductsContent() {
       try {
         setIsLoading(true);
         // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        setProducts(products.filter(p => p.id !== deleteProductId));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        setProducts(products.filter((p) => p.id !== deleteProductId));
         setDeleteProductId(null);
         toast({
-          title: 'Product Deleted',
-          description: 'The product has been successfully deleted.',
+          title: "Product Deleted",
+          description: "The product has been successfully deleted.",
         });
-      } catch (error) {
+      } catch (error: any) {
         toast({
-          title: 'Error',
-          description: 'Failed to delete product. Please try again.',
-          variant: 'destructive',
+          title: "Error",
+          description: "Failed to delete product. Please try again.",
+          variant: "destructive",
         });
       } finally {
         setIsLoading(false);
@@ -296,11 +300,14 @@ export function ProductsContent() {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Delete Product</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Are you sure you want to delete this product? This action cannot be undone.
+                            Are you sure you want to delete this product? This
+                            action cannot be undone.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel onClick={() => setDeleteProductId(null)}>
+                          <AlertDialogCancel
+                            onClick={() => setDeleteProductId(null)}
+                          >
                             Cancel
                           </AlertDialogCancel>
                           <AlertDialogAction
@@ -322,21 +329,21 @@ export function ProductsContent() {
 
       <div className="flex justify-between items-center">
         <div className="text-sm text-muted-foreground">
-          Showing {((currentPage - 1) * ITEMS_PER_PAGE) + 1} to{' '}
-          {Math.min(currentPage * ITEMS_PER_PAGE, filteredProducts.length)} of{' '}
+          Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{" "}
+          {Math.min(currentPage * ITEMS_PER_PAGE, filteredProducts.length)} of{" "}
           {filteredProducts.length} products
         </div>
         <div className="space-x-2">
           <Button
             variant="outline"
-            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
           >
             Previous
           </Button>
           <Button
             variant="outline"
-            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
           >
             Next
