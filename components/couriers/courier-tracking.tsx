@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase } from "./supabaseClient";
+import { supabase } from "./SupabaseClient";
 import { motion, AnimatePresence } from "framer-motion"; // For animations
 
 export function TrackingContent() {
@@ -17,8 +17,11 @@ export function TrackingContent() {
   useEffect(() => {
     const fetchData = async () => {
       // ✅ Fetch Couriers
-      const { data: courierData, error: courierError } = await supabase.from("couriers").select("*");
-      if (courierError) console.error("Error fetching couriers:", courierError.message);
+      const { data: courierData, error: courierError } = await supabase
+        .from("couriers")
+        .select("*");
+      if (courierError)
+        console.error("Error fetching couriers:", courierError.message);
       setCouriers(courierData || []);
 
       // ✅ Fetch Orders (Only Pending or Shipped)
@@ -27,15 +30,19 @@ export function TrackingContent() {
         .select("id, status, quantity, delivery_date")
         .in("status", ["Pending", "Shipped"]);
 
-      if (orderError) console.error("Error fetching orders:", orderError.message);
+      if (orderError)
+        console.error("Error fetching orders:", orderError.message);
       else setOrders(orderData || []);
 
       // ✅ Fetch Order Assignments
       const { data: assignmentData, error: assignmentError } = await supabase
         .from("order_assignments")
-        .select("id, status, assigned_at, orders(id, status), couriers(id, name)");
+        .select(
+          "id, status, assigned_at, orders(id, status), couriers(id, name)"
+        );
 
-      if (assignmentError) console.error("Error fetching assignments:", assignmentError.message);
+      if (assignmentError)
+        console.error("Error fetching assignments:", assignmentError.message);
       setAssignments(assignmentData || []);
     };
 
@@ -61,10 +68,17 @@ export function TrackingContent() {
     }
 
     await supabase.from("order_assignments").insert([
-      { order_id: selectedOrder, courier_id: selectedCourier, status: "assigned" },
+      {
+        order_id: selectedOrder,
+        courier_id: selectedCourier,
+        status: "assigned",
+      },
     ]);
 
-    await supabase.from("couriers").update({ status: "busy" }).eq("id", selectedCourier);
+    await supabase
+      .from("couriers")
+      .update({ status: "busy" })
+      .eq("id", selectedCourier);
 
     alert("Order assigned successfully!");
     window.location.reload(); // Refresh to see new data
@@ -77,10 +91,18 @@ export function TrackingContent() {
       return;
     }
 
-    await supabase.from("couriers").update({ location: selectedLocation }).eq("id", selectedCourier);
+    await supabase
+      .from("couriers")
+      .update({ location: selectedLocation })
+      .eq("id", selectedCourier);
 
     await supabase.from("courier_tracking").insert([
-      { courier_id: selectedCourier, latitude: null, longitude: null, status },
+      {
+        courier_id: selectedCourier,
+        latitude: null,
+        longitude: null,
+        status,
+      },
     ]);
 
     alert("Location updated successfully!");
@@ -93,11 +115,21 @@ export function TrackingContent() {
       return;
     }
 
-    await supabase.from("orders").update({ status: "Delivered" }).eq("id", selectedOrder);
+    await supabase
+      .from("orders")
+      .update({ status: "Delivered" })
+      .eq("id", selectedOrder);
 
-    await supabase.from("order_assignments").update({ status: "completed" }).eq("order_id", selectedOrder).eq("courier_id", selectedCourier);
+    await supabase
+      .from("order_assignments")
+      .update({ status: "completed" })
+      .eq("order_id", selectedOrder)
+      .eq("courier_id", selectedCourier);
 
-    await supabase.from("couriers").update({ status: "available" }).eq("id", selectedCourier);
+    await supabase
+      .from("couriers")
+      .update({ status: "available" })
+      .eq("id", selectedCourier);
 
     alert("Order marked as delivered!");
     window.location.reload(); // Refresh to see new data
@@ -106,7 +138,9 @@ export function TrackingContent() {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">📦 Courier Tracking & Order Assignment</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
+          📦 Courier Tracking & Order Assignment
+        </h1>
 
         {/* Assign Order */}
         <motion.div
@@ -115,7 +149,9 @@ export function TrackingContent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-xl font-bold mb-4 text-gray-700">🚚 Assign Order to Courier</h2>
+          <h2 className="text-xl font-bold mb-4 text-gray-700">
+            🚚 Assign Order to Courier
+          </h2>
           <select
             className="border border-gray-300 p-2 rounded w-full mb-4 bg-white text-gray-700"
             value={selectedCourier}
@@ -159,7 +195,9 @@ export function TrackingContent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <h2 className="text-xl font-bold mb-4 text-gray-700">📍 Update Courier Location</h2>
+          <h2 className="text-xl font-bold mb-4 text-gray-700">
+            📍 Update Courier Location
+          </h2>
           <select
             className="border border-gray-300 p-2 rounded w-full mb-4 bg-white text-gray-700"
             value={selectedCourier}
@@ -193,7 +231,9 @@ export function TrackingContent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
         >
-          <h2 className="text-xl font-bold mb-4 text-gray-700">✅ Mark Order as Delivered</h2>
+          <h2 className="text-xl font-bold mb-4 text-gray-700">
+            ✅ Mark Order as Delivered
+          </h2>
           <button
             onClick={markDelivered}
             className="bg-yellow-500 text-white px-4 py-2 rounded w-full hover:bg-yellow-600 transition-colors"
@@ -209,14 +249,24 @@ export function TrackingContent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.6 }}
         >
-          <h2 className="text-xl font-bold mb-4 text-gray-700">📋 Assigned Orders</h2>
+          <h2 className="text-xl font-bold mb-4 text-gray-700">
+            📋 Assigned Orders
+          </h2>
           <table className="w-full border-collapse border border-gray-300">
             <thead>
               <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-4 py-2 text-gray-700">Order ID</th>
-                <th className="border border-gray-300 px-4 py-2 text-gray-700">Courier</th>
-                <th className="border border-gray-300 px-4 py-2 text-gray-700">Status</th>
-                <th className="border border-gray-300 px-4 py-2 text-gray-700">Assigned At</th>
+                <th className="border border-gray-300 px-4 py-2 text-gray-700">
+                  Order ID
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-gray-700">
+                  Courier
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-gray-700">
+                  Status
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-gray-700">
+                  Assigned At
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -228,9 +278,15 @@ export function TrackingContent() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
                 >
-                  <td className="border border-gray-300 px-4 py-2 text-gray-700">{assignment.orders.id}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-gray-700">{assignment.couriers.name}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-gray-700">{assignment.status}</td>
+                  <td className="border border-gray-300 px-4 py-2 text-gray-700">
+                    {assignment.orders.id}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-gray-700">
+                    {assignment.couriers.name}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-gray-700">
+                    {assignment.status}
+                  </td>
                   <td className="border border-gray-300 px-4 py-2 text-gray-700">
                     {new Date(assignment.assigned_at).toLocaleString()}
                   </td>

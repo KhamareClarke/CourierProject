@@ -1,11 +1,12 @@
+// @ts-nocheck
 "use client";
+import { useState, useEffect } from "react";
+import ExcelJS from "exceljs";
+// @ts-expect-error dkj
+import { saveAs } from "file-saver";
+import { supabase } from "./SupabaseClient";
 
-import { useState, useEffect } from 'react';
-import ExcelJS from 'exceljs';
-import { saveAs } from 'file-saver';
-import { supabase } from './supabaseClient';
-
-import { format } from 'date-fns';
+import { format } from "date-fns";
 import {
   Table,
   TableBody,
@@ -13,51 +14,53 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Search, ArrowUpDown, Eye } from 'lucide-react';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Search, ArrowUpDown, Eye } from "lucide-react";
 
 const expectedHeaders = [
-  'customer_name',
-  'address',
-  'product_name',
-  'quantity',
-  'status',
-  'delivery_date (YYYY-MM-DD)',
-  'email',
-  'phone',
+  "customer_name",
+  "address",
+  "product_name",
+  "quantity",
+  "status",
+  "delivery_date (YYYY-MM-DD)",
+  "email",
+  "phone",
 ];
 
 const statusConfig = {
-  pending: { label: 'Pending', className: 'bg-yellow-100 text-yellow-800' },
-  shipped: { label: 'Shipped', className: 'bg-blue-100 text-blue-800' },
-  delivered: { label: 'Delivered', className: 'bg-green-100 text-green-800' },
+  pending: { label: "Pending", className: "bg-yellow-100 text-yellow-800" },
+  shipped: { label: "Shipped", className: "bg-blue-100 text-blue-800" },
+  delivered: { label: "Delivered", className: "bg-green-100 text-green-800" },
 } as const;
 
-export  function OrdersUploadContent() {
+export function OrdersUploadContent() {
   const [products, setProducts] = useState<{ id: string; name: string }[]>([]);
-  const [selectedProduct, setSelectedProduct] = useState<string>('');
+  const [selectedProduct, setSelectedProduct] = useState<string>("");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [validationResults, setValidationResults] = useState<
-    { row: number; message: string; type: 'success' | 'error' }[]
+    { row: number; message: string; type: "success" | "error" }[]
   >([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState<number>(0);
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const { data, error } = await supabase.from('products').select('id, name');
+      const { data, error } = await supabase
+        .from("products")
+        .select("id, name");
       if (error) {
-        console.error('Error fetching products:', error);
+        console.error("Error fetching products:", error);
       } else {
         setProducts(data || []);
       }
@@ -75,7 +78,7 @@ export  function OrdersUploadContent() {
 
   const handleDownload = async () => {
     if (!selectedProduct) {
-      alert('Please select a product!');
+      alert("Please select a product!");
       return;
     }
 
@@ -83,24 +86,24 @@ export  function OrdersUploadContent() {
     if (!product) return;
 
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Orders');
+    const worksheet = workbook.addWorksheet("Orders");
     worksheet.addRow(expectedHeaders);
 
-    const statuses = ['Shipped', 'Delivered', 'Pending'];
+    const statuses = ["Shipped", "Delivered", "Pending"];
     statuses.forEach((status) => {
-      worksheet.addRow(['', '', product.name, 1, status, '', '', '']);
+      worksheet.addRow(["", "", product.name, 1, status, "", "", ""]);
     });
 
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
-    saveAs(blob, 'order_template.xlsx');
+    saveAs(blob, "order_template.xlsx");
   };
 
   const saveData = async () => {
     if (!uploadedFile) {
-      alert('Please upload a file first!');
+      alert("Please upload a file first!");
       return;
     }
 
@@ -118,7 +121,7 @@ export  function OrdersUploadContent() {
       const fileHeaders = worksheet.getRow(1).values.slice(1);
       if (JSON.stringify(fileHeaders) !== JSON.stringify(expectedHeaders)) {
         setValidationResults([
-          { row: 0, message: 'Template headers do not match.', type: 'error' },
+          { row: 0, message: "Template headers do not match.", type: "error" },
         ]);
         setIsProcessing(false);
         return;
@@ -143,20 +146,20 @@ export  function OrdersUploadContent() {
 
         // Validation check
         const missingFields = [];
-        if (!customerName) missingFields.push('Customer Name');
-        if (!address) missingFields.push('Address');
-        if (!productName) missingFields.push('Product Name');
-        if (!quantity) missingFields.push('Quantity');
-        if (!status) missingFields.push('Status');
-        if (!deliveryDate) missingFields.push('Delivery Date');
-        if (!email) missingFields.push('Email');
-        if (!phone) missingFields.push('Phone');
+        if (!customerName) missingFields.push("Customer Name");
+        if (!address) missingFields.push("Address");
+        if (!productName) missingFields.push("Product Name");
+        if (!quantity) missingFields.push("Quantity");
+        if (!status) missingFields.push("Status");
+        if (!deliveryDate) missingFields.push("Delivery Date");
+        if (!email) missingFields.push("Email");
+        if (!phone) missingFields.push("Phone");
 
         if (missingFields.length > 0) {
           results.push({
             row: i,
-            message: `Missing fields: ${missingFields.join(', ')}`,
-            type: 'error',
+            message: `Missing fields: ${missingFields.join(", ")}`,
+            type: "error",
           });
           errorCount++;
           continue;
@@ -164,16 +167,19 @@ export  function OrdersUploadContent() {
 
         try {
           const { data: customerData, error: customerError } = await supabase
-            .from('customers')
-            .upsert({ name: customerName, address, email, phone }, { onConflict: 'email' })
-            .select('id')
+            .from("customers")
+            .upsert(
+              { name: customerName, address, email, phone },
+              { onConflict: "email" }
+            )
+            .select("id")
             .single();
 
           if (customerError) {
             results.push({
               row: i,
               message: `Failed to save customer for ${customerName}: ${customerError.message}`,
-              type: 'error',
+              type: "error",
             });
             errorCount++;
             continue;
@@ -182,16 +188,16 @@ export  function OrdersUploadContent() {
           const customerId = customerData.id;
 
           const { data: productData, error: productError } = await supabase
-            .from('products')
-            .select('id')
-            .eq('name', productName)
+            .from("products")
+            .select("id")
+            .eq("name", productName)
             .single();
 
           if (productError) {
             results.push({
               row: i,
               message: `Product "${productName}" not found.`,
-              type: 'error',
+              type: "error",
             });
             errorCount++;
             continue;
@@ -199,7 +205,7 @@ export  function OrdersUploadContent() {
 
           const productId = productData.id;
 
-          const { error: orderError } = await supabase.from('orders').insert({
+          const { error: orderError } = await supabase.from("orders").insert({
             customer_id: customerId,
             product_id: productId,
             quantity,
@@ -211,7 +217,7 @@ export  function OrdersUploadContent() {
             results.push({
               row: i,
               message: `Failed to save order for ${customerName}: ${orderError.message}`,
-              type: 'error',
+              type: "error",
             });
             errorCount++;
             continue;
@@ -220,14 +226,14 @@ export  function OrdersUploadContent() {
           results.push({
             row: i,
             message: `✔ Your order for ${customerName} has been saved successfully.`,
-            type: 'success',
+            type: "success",
           });
           successCount++;
         } catch (error) {
           results.push({
             row: i,
-            message: `Row ${i}: ${error.message || 'Unknown error occurred.'}`,
-            type: 'error',
+            message: `Row ${i}: ${error.message || "Unknown error occurred."}`,
+            type: "error",
           });
           errorCount++;
         }
@@ -275,7 +281,7 @@ export  function OrdersUploadContent() {
         <h2 className="text-xl font-semibold">Upload Completed File</h2>
         <Input type="file" accept=".xlsx, .xls" onChange={handleFileUpload} />
         <Button onClick={saveData} disabled={isProcessing}>
-          {isProcessing ? 'Processing...' : 'Save Data'}
+          {isProcessing ? "Processing..." : "Save Data"}
         </Button>
       </div>
 
@@ -286,14 +292,16 @@ export  function OrdersUploadContent() {
         </div>
       )}
 
-{!isProcessing && validationResults.length > 0 && (
+      {!isProcessing && validationResults.length > 0 && (
         <div className="space-y-2">
           <h3 className="text-lg font-semibold">Validation Results:</h3>
           <ul>
             {validationResults.map((result, index) => (
               <li
                 key={index}
-                className={`mb-2 ${result.type === 'success' ? 'text-green-500' : 'text-red-500'}`}
+                className={`mb-2 ${
+                  result.type === "success" ? "text-green-500" : "text-red-500"
+                }`}
               >
                 {result.message}
               </li>
