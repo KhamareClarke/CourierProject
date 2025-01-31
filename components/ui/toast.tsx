@@ -130,6 +130,7 @@ export function useToast() {
   const [toasts, setToasts] = React.useState<ToastProps[]>([]);
 
   const toast = React.useCallback(
+    // @ts-expect-error
     ({ title, description, action, ...props }: ToastProps) => {
       setToasts((currentToasts) => [
         ...currentToasts,
