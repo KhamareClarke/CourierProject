@@ -158,6 +158,7 @@ export function ReportsContent() {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Date Range</label>
+                {/* @ts-expect-error */}
                 <DatePickerWithRange date={dateRange} setDate={setDateRange} />
               </div>
 
