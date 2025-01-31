@@ -39,7 +39,7 @@ export async function createOrder(order: {
     .select()
     .single();
 
-  if (ordererror) throw orderError;
+  if (orderError) throw orderError;
 
   const orderItems = order.items.map(item => ({
     order_id: orderData.id,
@@ -51,7 +51,7 @@ export async function createOrder(order: {
     .from('order_items')
     .insert(orderItems);
 
-  if (itemserror) throw itemsError;
+  if (itemsError) throw itemsError;
 
   return orderData;
 }
