@@ -24,12 +24,12 @@ export function PricingContent() {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       toast({
         title: "Quote Generated",
-        description: "Your custom quote has been sent to your email.",
+        content: "Your custom quote has been sent to your email.",
       });
     } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to generate quote. Please try again.",
+        content: "Failed to generate quote. Please try again.",
         variant: "destructive",
       });
     } finally {

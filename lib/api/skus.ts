@@ -82,7 +82,7 @@ export async function deleteSKU(id: string) {
         .delete()
         .eq('sku_id', id);
 
-    if (inventoryerror) throw inventoryError;
+    if (inventoryError) throw inventoryError;
 
     // Delete related transactions
     const { error: transactionsError } = await supabase
@@ -90,7 +90,7 @@ export async function deleteSKU(id: string) {
         .delete()
         .eq('sku_id', id);
 
-    if (transactionserror) throw transactionsError;
+    if (transactionsError) throw transactionsError;
 
     // Delete the SKU itself
     const { error } = await supabase

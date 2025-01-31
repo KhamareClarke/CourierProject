@@ -66,14 +66,14 @@ export function TrainingContent() {
 
       toast({
         title: "Feedback Submitted",
-        description: "Thank you for your feedback. We will review it shortly.",
+        content: "Thank you for your feedback. We will review it shortly.",
       });
       setShowFeedbackDialog(false);
       form.reset();
     } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to submit feedback. Please try again.",
+        content: "Failed to submit feedback. Please try again.",
         variant: "destructive",
       });
     } finally {

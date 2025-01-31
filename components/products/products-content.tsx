@@ -119,12 +119,12 @@ export function ProductsContent() {
       setShowAddDialog(false);
       toast({
         title: "Product Added",
-        description: "The product has been successfully added.",
+        content: "The product has been successfully added.",
       });
     } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to add product. Please try again.",
+        content: "Failed to add product. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -144,12 +144,12 @@ export function ProductsContent() {
       setEditingProduct(null);
       toast({
         title: "Product Updated",
-        description: "The product has been successfully updated.",
+        content: "The product has been successfully updated.",
       });
     } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to update product. Please try again.",
+        content: "Failed to update product. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -168,12 +168,12 @@ export function ProductsContent() {
         setDeleteProductId(null);
         toast({
           title: "Product Deleted",
-          description: "The product has been successfully deleted.",
+          content: "The product has been successfully deleted.",
         });
       } catch (error: any) {
         toast({
           title: "Error",
-          description: "Failed to delete product. Please try again.",
+          content: "Failed to delete product. Please try again.",
           variant: "destructive",
         });
       } finally {

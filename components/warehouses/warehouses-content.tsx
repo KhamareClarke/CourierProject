@@ -125,7 +125,7 @@ export function WarehousesContent() {
     if (!permissions.canCreateWarehouse) {
       toast({
         title: "Permission Denied",
-        description: "You do not have permission to create warehouses.",
+        content: "You do not have permission to create warehouses.",
         variant: "destructive",
       });
       return;
@@ -146,12 +146,12 @@ export function WarehousesContent() {
       setShowAddDialog(false);
       toast({
         title: "Warehouse Added",
-        description: "The warehouse has been successfully added.",
+        content: "The warehouse has been successfully added.",
       });
     } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to add warehouse. Please try again.",
+        content: "Failed to add warehouse. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -163,7 +163,7 @@ export function WarehousesContent() {
     if (!permissions.canEditWarehouse) {
       toast({
         title: "Permission Denied",
-        description: "You do not have permission to edit warehouses.",
+        content: "You do not have permission to edit warehouses.",
         variant: "destructive",
       });
       return;
@@ -181,12 +181,12 @@ export function WarehousesContent() {
       setEditingWarehouse(null);
       toast({
         title: "Warehouse Updated",
-        description: "The warehouse has been successfully updated.",
+        content: "The warehouse has been successfully updated.",
       });
     } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to update warehouse. Please try again.",
+        content: "Failed to update warehouse. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -198,7 +198,7 @@ export function WarehousesContent() {
     if (!permissions.canDeleteWarehouse) {
       toast({
         title: "Permission Denied",
-        description: "You do not have permission to delete warehouses.",
+        content: "You do not have permission to delete warehouses.",
         variant: "destructive",
       });
       return;
@@ -213,12 +213,12 @@ export function WarehousesContent() {
         setDeletingWarehouseId(null);
         toast({
           title: "Warehouse Deleted",
-          description: "The warehouse has been successfully deleted.",
+          content: "The warehouse has been successfully deleted.",
         });
       } catch (error: any) {
         toast({
           title: "Error",
-          description: "Failed to delete warehouse. Please try again.",
+          content: "Failed to delete warehouse. Please try again.",
           variant: "destructive",
         });
       } finally {

@@ -57,14 +57,14 @@ export function SettingsContent() {
 
       toast({
         title: "Password Updated",
-        description: "Your password has been successfully changed.",
+        content: "Your password has been successfully changed.",
       });
       setIsChangingPassword(false);
       form.reset();
     } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to update password. Please try again.",
+        content: "Failed to update password. Please try again.",
         variant: "destructive",
       });
     }

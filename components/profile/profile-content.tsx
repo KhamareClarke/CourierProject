@@ -55,13 +55,13 @@ export function ProfileContent() {
 
       toast({
         title: "Profile Updated",
-        description: "Your profile has been successfully updated.",
+        content: "Your profile has been successfully updated.",
       });
       setIsEditing(false);
     } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to update profile. Please try again.",
+        content: "Failed to update profile. Please try again.",
         variant: "destructive",
       });
     } finally {

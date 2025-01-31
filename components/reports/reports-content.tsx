@@ -70,7 +70,7 @@ export function ReportsContent() {
     if (!selectedReport || !dateRange?.from || !dateRange?.to) {
       toast({
         title: "Missing Information",
-        description: "Please select a report type and date range.",
+        content: "Please select a report type and date range.",
         variant: "destructive",
       });
       return;
@@ -88,12 +88,12 @@ export function ReportsContent() {
 
       toast({
         title: "Report Generated",
-        description: `${fileName} has been generated successfully.`,
+        content: `${fileName} has been generated successfully.`,
       });
     } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to generate report. Please try again.",
+        content: "Failed to generate report. Please try again.",
         variant: "destructive",
       });
     } finally {

@@ -45,13 +45,13 @@ export function LoginContent() {
       // For demo purposes, accept any valid email/password
       toast({
         title: "Login Successful",
-        description: "Welcome back!",
+        content: "Welcome back!",
       });
       router.push("/");
     } catch (error: any) {
       toast({
         title: "Login Failed",
-        description: "Invalid email or password",
+        content: "Invalid email or password",
         variant: "destructive",
       });
     } finally {

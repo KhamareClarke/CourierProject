@@ -23,7 +23,7 @@ export function StockContent() {
     skuName: "",
     skuCode: "",
     skuCategory: "",
-    skuDescription: "",
+    skucontent: "",
     binName: "",
     binLocation: "",
     binSKU: "",
@@ -242,7 +242,7 @@ export function StockContent() {
             className="border p-2 rounded w-full mb-2"
             value={formData.skuDescription}
             onChange={(e) =>
-              setFormData({ ...formData, skuDescription: e.target.value })
+              setFormData({ ...formData, skucontent: e.target.value })
             }
           ></textarea>
           <button
@@ -251,7 +251,7 @@ export function StockContent() {
                 name: formData.skuName,
                 code: formData.skuCode,
                 category: formData.skuCategory,
-                description: formData.skuDescription,
+                content: formData.skuDescription,
               })
             }
             className="bg-blue-500 text-white px-4 py-2 rounded"

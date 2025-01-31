@@ -47,13 +47,13 @@ export function HelpContent() {
 
       toast({
         title: "Support Request Sent",
-        description: "We will get back to you within 24 hours.",
+        content: "We will get back to you within 24 hours.",
       });
       form.reset();
     } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to send support request. Please try again.",
+        content: "Failed to send support request. Please try again.",
         variant: "destructive",
       });
     }
