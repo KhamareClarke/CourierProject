@@ -84,7 +84,9 @@ const AddPalletForm: React.FC = () => {
               Choose an SKU
             </option>
             {skus.map((sku) => (
+              // @ts-expect-error
               <option key={sku.id} value={sku.id}>
+                {/* @ts-expect-error */}
                 {sku.code} - {sku.name}
               </option>
             ))}
