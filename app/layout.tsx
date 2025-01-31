@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "WCMS - Warehouse Management System",
-  content: "Modern warehouse management system",
+  description: "Modern warehouse management system",
 };
 
 export default function RootLayout({
