@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase } from "./SupabaseClient";
 import { Radar } from "react-chartjs-2";
 import "chart.js/auto";
 import * as tf from "@tensorflow/tfjs";
@@ -10,9 +9,9 @@ import "react-toastify/dist/ReactToastify.css";
 import Papa from "papaparse";
 import { Canvas } from "@react-three/fiber";
 import { Box } from "@react-three/drei";
-import { Spinner } from "./Spinner"; // Assuming you have a Spinner component for loading states
-
-export function OrdersUploadContent() {
+import { supabase } from "@/lib/supabase/client";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+export default function OrdersUploadContent() {
   const [counterfeitData, setCounterfeitData] = useState<any[]>([]);
   const [recyclingData, setRecyclingData] = useState<any[]>([]);
   const [fraudPredictions, setFraudPredictions] = useState<any[]>([]);
@@ -90,7 +89,7 @@ export function OrdersUploadContent() {
 
       {loading ? (
         <div className="flex justify-center items-center h-64">
-          <Spinner />
+          <LoadingSpinner />
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

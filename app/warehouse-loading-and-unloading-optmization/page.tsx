@@ -1,18 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase } from "./SupabaseClient";
+import { supabase } from "@/lib/supabase/client";
 import { Line, Bar, Pie, Doughnut, PolarArea, Radar, Bubble } from "react-chartjs-2";
 import "chart.js/auto";
 import * as tf from "@tensorflow/tfjs";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Papa from "papaparse";
-import Chart from "react-apexcharts";
 import { Canvas } from "@react-three/fiber";
 import { Box } from "@react-three/drei";
 
-export function StockContent() {
+export default function StockContent() {
   const [inventoryData, setInventoryData] = useState<any[]>([]);
   const [loadingPlan, setLoadingPlan] = useState<any[]>([]);
   const [unloadingPlan, setUnloadingPlan] = useState<any[]>([]);

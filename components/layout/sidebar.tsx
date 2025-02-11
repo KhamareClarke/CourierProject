@@ -24,6 +24,9 @@ const navigation = [
   { name: "Reports", href: "/reports", icon: FileText, shortcut: "Alt + R" },
   { name: "Stock", href: "/Stock", icon: FileText, shortcut: "Alt + R" },
   { name: "Upload Orders", href: "/upload-orders", icon: FileText, shortcut: "Alt + R" },
+  { name: "Brand Protection", href: "/brand-protection", icon: FileText, shortcut: "Alt + R" },
+  { name: "Predictive Analysis", href: "/predictive-analysis-dashboard", icon: FileText, shortcut: "Alt + R" },
+  { name: "Warehouse Optmization", href: "/warehouse-loading-and-unloading-optmization", icon: FileText, shortcut: "Alt + R" },
 
 ];
 

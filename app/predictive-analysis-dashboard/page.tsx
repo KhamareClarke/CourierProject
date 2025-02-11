@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase } from "./SupabaseClient";
 import { Line, Bar, Pie, Doughnut, Radar, Scatter, PolarArea, Bubble } from "react-chartjs-2";
 import "chart.js/auto";
 import * as tf from "@tensorflow/tfjs";
@@ -10,8 +9,8 @@ import "react-toastify/dist/ReactToastify.css";
 import Papa from "papaparse";
 import { motion } from "framer-motion";
 import { FaDownload, FaChartLine, FaBox, FaExclamationTriangle, FaFilter } from "react-icons/fa";
-
-export function OrdersUploadContent() {
+import { supabase } from "@/lib/supabase/client";
+export default function OrdersUploadContent() {
   const [salesData, setSalesData] = useState<any[]>([]);
   const [predictions, setPredictions] = useState<any[]>([]);
   const [topProducts, setTopProducts] = useState<any[]>([]);
