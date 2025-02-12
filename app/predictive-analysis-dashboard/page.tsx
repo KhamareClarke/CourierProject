@@ -48,7 +48,6 @@ export default function OrdersUploadContent() {
 
     fetchData();
 
-    // Live Sync with Supabase
     const subscription = supabase
       .channel("sales_updates")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "sales_data" }, (payload) => {
