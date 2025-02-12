@@ -20,31 +20,31 @@ export default function OrdersUploadContent() {
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
 
+  async function fetchData() {
+    setLoading(true);
+
+    // Fetch sales data
+    const { data: sales } = await supabase.from("sales_data").select("*").order("order_date", { ascending: true });
+    setSalesData(sales || []);
+
+    // Fetch top-selling products
+    const { data: topProducts } = await supabase.rpc("get_top_selling_products").limit(5);
+    setTopProducts(topProducts || []);
+
+    // Fetch inventory levels
+    const { data: inventory } = await supabase.from("inventory").select("*");
+    setInventoryLevels(inventory || []);
+
+    // Fetch category-wise sales
+    const { data: categoryData } = await supabase.rpc("get_category_sales");
+    setCategorySales(categoryData || []);
+
+    // Generate restocking recommendations
+    generateRestockRecommendations(inventory || []);
+
+    setLoading(false);
+  }
   useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-
-      // Fetch sales data
-      const { data: sales } = await supabase.from("sales_data").select("*").order("order_date", { ascending: true });
-      setSalesData(sales || []);
-
-      // Fetch top-selling products
-      const { data: topProducts } = await supabase.rpc("get_top_selling_products").limit(5);
-      setTopProducts(topProducts || []);
-
-      // Fetch inventory levels
-      const { data: inventory } = await supabase.from("inventory").select("*");
-      setInventoryLevels(inventory || []);
-
-      // Fetch category-wise sales
-      const { data: categoryData } = await supabase.rpc("get_category_sales");
-      setCategorySales(categoryData || []);
-
-      // Generate restocking recommendations
-      generateRestockRecommendations(inventory || []);
-
-      setLoading(false);
-    }
 
     fetchData();
 
@@ -62,35 +62,35 @@ export default function OrdersUploadContent() {
   }, []);
 
   // AI Demand Forecasting Model
+  async function predictFutureSales() {
+    const dates = salesData.map((item) => new Date(item.order_date).getTime());
+    const quantities = salesData.map((item) => item.quantity_sold);
+
+    const maxDate = Math.max(...dates);
+    const minDate = Math.min(...dates);
+    const normalizedDates = dates.map((date) => (date - minDate) / (maxDate - minDate));
+
+    const xs = tf.tensor2d(normalizedDates, [normalizedDates.length, 1]);
+    const ys = tf.tensor2d(quantities, [quantities.length, 1]);
+
+    const model = tf.sequential();
+    model.add(tf.layers.dense({ units: 1, inputShape: [1] }));
+    model.compile({ loss: "meanSquaredError", optimizer: "sgd" });
+
+    await model.fit(xs, ys, { epochs: 500 });
+
+    const futureDays = 7;
+    const futureDates = Array.from({ length: futureDays }, (_, i) => (maxDate + i * 86400000 - minDate) / (maxDate - minDate));
+    const futureXs = tf.tensor2d(futureDates, [futureDays, 1]);
+    const predictions = model.predict(futureXs) as tf.Tensor;
+
+    const predictedValues = await predictions.data();
+    const futureDatesFormatted = futureDates.map((_, i) => new Date(maxDate + i * 86400000).toISOString().split("T")[0]);
+
+    setPredictions(futureDatesFormatted.map((date, i) => ({ date, quantity: predictedValues[i] })));
+  }
   useEffect(() => {
     if (salesData.length > 0) {
-      async function predictFutureSales() {
-        const dates = salesData.map((item) => new Date(item.order_date).getTime());
-        const quantities = salesData.map((item) => item.quantity_sold);
-
-        const maxDate = Math.max(...dates);
-        const minDate = Math.min(...dates);
-        const normalizedDates = dates.map((date) => (date - minDate) / (maxDate - minDate));
-
-        const xs = tf.tensor2d(normalizedDates, [normalizedDates.length, 1]);
-        const ys = tf.tensor2d(quantities, [quantities.length, 1]);
-
-        const model = tf.sequential();
-        model.add(tf.layers.dense({ units: 1, inputShape: [1] }));
-        model.compile({ loss: "meanSquaredError", optimizer: "sgd" });
-
-        await model.fit(xs, ys, { epochs: 500 });
-
-        const futureDays = 7;
-        const futureDates = Array.from({ length: futureDays }, (_, i) => (maxDate + i * 86400000 - minDate) / (maxDate - minDate));
-        const futureXs = tf.tensor2d(futureDates, [futureDays, 1]);
-        const predictions = model.predict(futureXs) as tf.Tensor;
-
-        const predictedValues = await predictions.data();
-        const futureDatesFormatted = futureDates.map((_, i) => new Date(maxDate + i * 86400000).toISOString().split("T")[0]);
-
-        setPredictions(futureDatesFormatted.map((date, i) => ({ date, quantity: predictedValues[i] })));
-      }
 
       predictFutureSales();
     }
