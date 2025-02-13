@@ -9,7 +9,7 @@ export function Footer() {
           <nav className="flex gap-4">
             <a
               className="text-sm text-gray-600 hover:text-gray-900"
-              href="/privacy-policy"
+              href="/dashboard/privacy-policy"
             >
               Privacy Policy
             </a>

@@ -40,7 +40,7 @@ export function Header({ toggleSidebar }: { toggleSidebar: () => void }) {
         <div className="flex items-center gap-2">
           <Link
             className="flex items-center gap-2 font-semibold text-lg hover:opacity-80 transition-opacity"
-            href="/"
+            href="/dashboard"
           >
             wcms
           </Link>
@@ -87,21 +87,21 @@ export function Header({ toggleSidebar }: { toggleSidebar: () => void }) {
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem 
-                  onClick={() => router.push('/profile')}
+                  onClick={() => router.push('/dashboard/profile')}
                   onSelect={(e) => e.preventDefault()}
                 >
                   <CircleUser className="h-4 w-4 mr-2" />
                   <span>My Profile</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem 
-                  onClick={() => router.push('/settings')}
+                  onClick={() => router.push('/dashboard/settings')}
                   onSelect={(e) => e.preventDefault()}
                 >
                   <Settings className="h-4 w-4 mr-2" />
                   <span>Settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem 
-                  onClick={() => router.push('/help')}
+                  onClick={() => router.push('/dashboard/help')}
                   onSelect={(e) => e.preventDefault()}
                 >
                   <HelpCircle className="h-4 w-4 mr-2" />

@@ -1,8 +1,8 @@
 'use client';
 
 import { Suspense } from 'react';
-import { OrdersUploadContent } from '@/components/orders/orders-upload';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { OrdersUploadContent } from '@/components/orders/orders-upload';
 
 export default function OrdersUploadPage() {
   return (

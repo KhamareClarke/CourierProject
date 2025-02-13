@@ -15,18 +15,18 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
 const navigation = [
-  { name: "Dashboard", href: "/", icon: LayoutDashboard, shortcut: "Alt + D" },
-  { name: "Warehouses", href: "/warehouses", icon: Building2, shortcut: "Alt + W" },
-  { name: "Inventories", href: "/products", icon: Package, shortcut: "Alt + P" },
-  { name: "Orders", href: "/orders", icon: ShoppingCart, shortcut: "Alt + O" },
-  { name: "Couriers", href: "/couriers", icon: Truck, shortcut: "Alt + C" },
-  { name: "Tracking & Management", href: "/tracking", icon: LoaderIcon, shortcut: "Alt + C" },
-  { name: "Reports", href: "/reports", icon: FileText, shortcut: "Alt + R" },
-  { name: "Stock", href: "/Stock", icon: FileText, shortcut: "Alt + R" },
-  { name: "Upload Orders", href: "/upload-orders", icon: FileText, shortcut: "Alt + R" },
-  { name: "Brand Protection", href: "/brand-protection", icon: FileText, shortcut: "Alt + R" },
-  { name: "Predictive Analysis", href: "/predictive-analysis-dashboard", icon: FileText, shortcut: "Alt + R" },
-  { name: "Warehouse Optmization", href: "/warehouse-loading-and-unloading-optmization", icon: FileText, shortcut: "Alt + R" },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, shortcut: "Alt + D" },
+  { name: "Warehouses", href: "/dashboard/warehouses", icon: Building2, shortcut: "Alt + W" },
+  { name: "Inventories", href: "/dashboard/products", icon: Package, shortcut: "Alt + P" },
+  { name: "Orders", href: "/dashboard/orders", icon: ShoppingCart, shortcut: "Alt + O" },
+  { name: "Couriers", href: "/dashboard/couriers", icon: Truck, shortcut: "Alt + C" },
+  // { name: "Tracking & Management", href: "/dashboard/tracking", icon: LoaderIcon, shortcut: "Alt + C" },
+  { name: "Reports", href: "/dashboard/reports", icon: FileText, shortcut: "Alt + R" },
+  { name: "Stock", href: "/dashboard/Stock", icon: FileText, shortcut: "Alt + R" },
+  // { name: "Upload Orders", href: "/dashboard/upload-orders", icon: FileText, shortcut: "Alt + R" },
+  // { name: "Brand Protection", href: "/dashboard/brand-protection", icon: FileText, shortcut: "Alt + R" },
+  { name: "Predictive Analysis", href: "/dashboard/predictive-analysis-dashboard", icon: FileText, shortcut: "Alt + R" },
+  { name: "Warehouse Optmization", href: "/dashboard/warehouse-loading-and-unloading-optmization", icon: FileText, shortcut: "Alt + R" },
 
 ];
 

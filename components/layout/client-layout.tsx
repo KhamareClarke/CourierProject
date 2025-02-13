@@ -19,13 +19,13 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
             window.location.href = '/';
             break;
           case 'p':
-            window.location.href = '/products';
+            window.location.href = '/dashboard/products';
             break;
           case 'o':
-            window.location.href = '/orders';
+            window.location.href = '/dashboard/orders';
             break;
           case 'c':
-            window.location.href = '/couriers';
+            window.location.href = '/dashboard/couriers';
             break;
           case '/':
             setShortcuts(!shortcuts);

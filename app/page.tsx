@@ -1,13 +1,9 @@
 'use client';
 
-import { Suspense } from 'react';
-import { DashboardContent } from '@/components/dashboard/dashboard-content';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
+
+import LoginPage from './login/page';
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={<LoadingSpinner />}>
-      <DashboardContent />
-    </Suspense>
-  );
+    <LoginPage/>)
 }
