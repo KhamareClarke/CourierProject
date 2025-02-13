@@ -16,13 +16,24 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Lock, Mail, User, Loader2 } from "lucide-react";
+import { Lock, Mail, Loader2, User, Phone } from "lucide-react";
 
-const formSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-});
+const formSchema = z
+  .object({
+    Name: z.string().min(1, " name is required"),
+    // lastName: z.string().min(1, "Last name is required"),
+    email: z.string().email("Please enter a valid email address"),
+    phone: z
+      .string()
+      .min(10, "Phone number must be at least 10 digits")
+      .regex(/^\+?[0-9]{10,15}$/, "Invalid phone number format"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string().min(8, "Password must be at least 8 characters"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 export function SignupContent() {
   const router = useRouter();
@@ -32,27 +43,28 @@ export function SignupContent() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
+      Name: "",
+      // lastName: "",
       email: "",
+      phone: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       setIsLoading(true);
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
       toast({
         title: "Signup Successful",
-        content: "Your account has been created.",
+        content: "Welcome!",
       });
-      router.push("/dashboard");
+      router.push("/login");
     } catch (error: any) {
       toast({
         title: "Signup Failed",
-        content: "An error occurred during signup.",
+        content: "Something went wrong",
         variant: "destructive",
       });
     } finally {
@@ -72,20 +84,31 @@ export function SignupContent() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
-              name="name"
+              name="Name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <div className="relative">
-                    <User className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                    <FormControl>
-                      <Input placeholder="John Doe" className="pl-10" {...field} disabled={isLoading} />
-                    </FormControl>
-                  </div>
+                  <FormLabel> Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} disabled={isLoading} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            {/* <FormField
+              control={form.control}
+              name="lastName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Last Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} disabled={isLoading} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            /> */}
 
             <FormField
               control={form.control}
@@ -96,7 +119,34 @@ export function SignupContent() {
                   <div className="relative">
                     <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
                     <FormControl>
-                      <Input placeholder="john@example.com" className="pl-10" {...field} disabled={isLoading} />
+                      <Input
+                        placeholder="user@example.com"
+                        className="pl-10"
+                        {...field}
+                        disabled={isLoading}
+                      />
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone</FormLabel>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                    <FormControl>
+                      <Input
+                        placeholder="+1234567890"
+                        className="pl-10"
+                        {...field}
+                        disabled={isLoading}
+                      />
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -113,7 +163,36 @@ export function SignupContent() {
                   <div className="relative">
                     <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
                     <FormControl>
-                      <Input type="password" placeholder="••••••••" className="pl-10" {...field} disabled={isLoading} />
+                      <Input
+                        type="password"
+                        placeholder="••••••••"
+                        className="pl-10"
+                        {...field}
+                        disabled={isLoading}
+                      />
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="••••••••"
+                        className="pl-10"
+                        {...field}
+                        disabled={isLoading}
+                      />
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -133,6 +212,11 @@ export function SignupContent() {
             </Button>
           </form>
         </Form>
+        <div className="text-center text-sm">
+          <p className="text-muted-foreground">
+            Already have an account? <span className="text-primary cursor-pointer" onClick={() => router.push("/login")}>Login</span>
+          </p>
+        </div>
       </div>
     </div>
   );

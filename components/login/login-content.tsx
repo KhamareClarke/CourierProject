@@ -128,8 +128,12 @@ export function LoginContent() {
             </Button>
           </form>
         </Form>
-
         <div className="text-center text-sm">
+          <p className="text-muted-foreground">
+            Dont have an account? <span className="text-primary cursor-pointer" onClick={() => router.push("/signup")}>Register</span>
+          </p>
+        </div>
+        {/* <div className="text-center text-sm">
           <p className="text-muted-foreground">
             Demo credentials:
             <br />
@@ -137,7 +141,7 @@ export function LoginContent() {
             <br />
             Password: password123
           </p>
-        </div>
+        </div> */}
       </div>
     </div>
   );
