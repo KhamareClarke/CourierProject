@@ -32,10 +32,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search, Plus, Pencil, Trash2, Building2, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
 import { WarehouseForm } from './warehouse-form';
 import dynamic from 'next/dynamic';
 import { rolePermissions } from '@/lib/types/roles';
+import html2canvas from 'html2canvas';
+import JsBarcode from 'jsbarcode';
 
 // Dynamically import the Map component
 const WarehouseMap = dynamic(() => import('../dashboard/warehouse-map'), { 
@@ -44,7 +45,8 @@ const WarehouseMap = dynamic(() => import('../dashboard/warehouse-map'), {
 });
 
 // Generate large mock dataset
-const generateMockWarehouses = (count: number) => {
+// @ts-expect-error jk jk
+const generateMockWarehouses = (count) => {
   return Array.from({ length: count }, (_, i) => ({
     id: `W${(i + 1).toString().padStart(5, '0')}`,
     name: `Warehouse ${i + 1}`,
@@ -52,7 +54,7 @@ const generateMockWarehouses = (count: number) => {
     coordinates: [
       51.5074 + (Math.random() - 0.5) * 2,
       -0.1278 + (Math.random() - 0.5) * 2
-    ] as [number, number],
+    ],
     capacity: Math.floor(Math.random() * 50000) + 10000,
     utilization: Math.floor(Math.random() * 100),
     revenue: Math.floor(Math.random() * 100000),
@@ -60,12 +62,12 @@ const generateMockWarehouses = (count: number) => {
     manager: `Manager ${i + 1}`,
     contact: `+44 ${Math.floor(Math.random() * 10000000000)}`,
     status: Math.random() > 0.2 ? 'active' : 'maintenance',
-    assignedStocks: [], // Add assignedStocks field
+    assignedStocks: [],
   }));
 };
 
 const ITEMS_PER_PAGE = 10;
-const mockWarehouses = generateMockWarehouses(1000); // Generate 1000 warehouses for testing
+const mockWarehouses = generateMockWarehouses(1000);
 
 // Fixed products
 const FIXED_PRODUCT_NAMES = [
@@ -82,19 +84,21 @@ const FIXED_PRODUCT_NAMES = [
 const FIXED_PRODUCTS = FIXED_PRODUCT_NAMES.map((name, index) => ({
   id: `P${(index + 1).toString().padStart(5, '0')}`,
   name,
-  quantity: Math.floor(Math.random() * 200) + 1, // Random initial stock
+  quantity: Math.floor(Math.random() * 200) + 1,
+  category: 'Clothing',
+  price: (Math.random() * 100).toFixed(2),
+  barcode: `1234567890${(index + 1).toString().padStart(2, '0')}`,
 }));
 
 // Stock assignment type
 type StockAssignment = {
-  id: string; // Unique ID for each assignment
+  id: string;
   productId: string;
   warehouseId: string;
   quantity: number;
 };
 
 export function WarehousesContent() {
-  const { toast } = useToast();
   const [warehouses, setWarehouses] = useState(mockWarehouses);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -102,14 +106,14 @@ export function WarehousesContent() {
   const [editingWarehouse, setEditingWarehouse] = useState<any | null>(null);
   const [deletingWarehouseId, setDeletingWarehouseId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [userRole] = useState<'admin' | 'staff' | 'viewer'>('admin'); // In real app, get from auth context
+  const [userRole] = useState<'admin' | 'staff' | 'viewer'>('admin');
 
   const permissions = rolePermissions[userRole];
 
   const [selectedWarehouse, setSelectedWarehouse] = useState<string>('');
   const [quantities, setQuantities] = useState<{ [productId: string]: number }>({});
   const [assignedStocks, setAssignedStocks] = useState<StockAssignment[]>([]);
-  const [products, setProducts] = useState(FIXED_PRODUCTS); // Track available stock
+  const [products, setProducts] = useState(FIXED_PRODUCTS);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingAssignmentId, setEditingAssignmentId] = useState<string | null>(null);
   const [assignmentSummary, setAssignmentSummary] = useState<{
@@ -117,6 +121,10 @@ export function WarehousesContent() {
     remaining: { productId: string; quantity: number }[];
   } | null>(null);
   const [stockMovements, setStockMovements] = useState<{ id: string; action: string; details: string; timestamp: Date }[]>([]);
+  const [isLabelDialogOpen, setIsLabelDialogOpen] = useState(false);
+  const [labelAddress, setLabelAddress] = useState('');
+  const [labelWarehouse, setLabelWarehouse] = useState<string>('');
+  const [isLabelGenerated, setIsLabelGenerated] = useState(false); // New state for label generation
 
   const logStockMovement = (action: string, details: string) => {
     setStockMovements((prev) => [
@@ -132,15 +140,14 @@ export function WarehousesContent() {
     }
 
     const newAssignments = Object.entries(quantities)
-      .filter(([_, quantity]) => quantity > 0) // Only consider positive quantities
+      .filter(([_, quantity]) => quantity > 0)
       .map(([productId, quantity]) => ({
-        id: `${productId}-${selectedWarehouse}-${Date.now()}`, // Unique ID for each assignment
+        id: `${productId}-${selectedWarehouse}-${Date.now()}`,
         productId,
         warehouseId: selectedWarehouse,
         quantity,
       }));
 
-    // Update available stock and assignments
     const updatedProducts = [...products];
     const updatedAssignments = [...assignedStocks];
     const assigned: { productId: string; quantity: number; warehouseName: string }[] = [];
@@ -150,19 +157,15 @@ export function WarehousesContent() {
       const product = updatedProducts.find((p) => p.id === newAssignment.productId);
       const warehouse = warehouses.find((w) => w.id === newAssignment.warehouseId);
       if (product && warehouse) {
-        // Deduct assigned quantity from available stock
         const assignedQuantity = Math.min(newAssignment.quantity, product.quantity);
         product.quantity -= assignedQuantity;
 
-        // Add to assigned list
         assigned.push({ productId: newAssignment.productId, quantity: assignedQuantity, warehouseName: warehouse.name });
 
-        // Add to remaining list if there's leftover stock
         if (newAssignment.quantity > assignedQuantity) {
           remaining.push({ productId: newAssignment.productId, quantity: newAssignment.quantity - assignedQuantity });
         }
 
-        // Merge with existing assignments
         const existingAssignment = updatedAssignments.find(
           (a) => a.productId === newAssignment.productId && a.warehouseId === newAssignment.warehouseId
         );
@@ -172,34 +175,24 @@ export function WarehousesContent() {
           updatedAssignments.push({ ...newAssignment, quantity: assignedQuantity });
         }
 
-        // Log the stock assignment
         logStockMovement('Assign', `Assigned ${assignedQuantity} of ${product.name} to ${warehouse.name}`);
 
-        // Update warehouse assigned stocks
-        // @ts-expect-error jkhkj kj
+// @ts-expect-error jk jk
         warehouse.assignedStocks.push({ ...newAssignment, quantity: assignedQuantity });
       }
     });
 
-    // Update state
     setProducts(updatedProducts);
     setAssignedStocks(updatedAssignments);
     setWarehouses([...warehouses]);
 
-    // Show assignment summary
     setAssignmentSummary({ assigned, remaining });
 
-    // Show success toast
-    toast({
-      title: 'Success',
-      content: 'Stocks have been assigned successfully.',
-    });
+    alert('Stocks have been assigned successfully.');
 
-    // Clear form
     setSelectedWarehouse('');
     setQuantities({});
 
-    // Close the dialog
     setIsDialogOpen(false);
   };
 
@@ -235,7 +228,6 @@ export function WarehousesContent() {
 
     setAssignedStocks(updatedAssignments);
 
-    // Log the stock update
     const assignment = assignedStocks.find((a) => a.id === editingAssignmentId);
     if (assignment) {
       const product = products.find((p) => p.id === assignment.productId);
@@ -245,25 +237,21 @@ export function WarehousesContent() {
       }
     }
 
-    // Clear form
     setSelectedWarehouse('');
     setQuantities({});
     setEditingAssignmentId(null);
 
-    // Show success message
     setAssignmentSummary({
       assigned: [{ productId: editingAssignmentId!.split('-')[0], quantity: quantities[editingAssignmentId!.split('-')[0]], warehouseName: warehouses.find((w) => w.id === selectedWarehouse)?.name || '' }],
       remaining: [],
     });
 
-    // Close the dialog
     setIsDialogOpen(false);
   };
 
   const handleDeleteAssignment = (assignmentId: string) => {
     const assignment = assignedStocks.find((a) => a.id === assignmentId);
     if (assignment) {
-      // Return the assigned quantity to available stock
       const updatedProducts = products.map((product) => {
         if (product.id === assignment.productId) {
           return { ...product, quantity: product.quantity + assignment.quantity };
@@ -272,17 +260,14 @@ export function WarehousesContent() {
       });
       setProducts(updatedProducts);
 
-      // Remove the assignment
       setAssignedStocks(assignedStocks.filter((a) => a.id !== assignmentId));
 
-      // Log the stock deletion
       const product = products.find((p) => p.id === assignment.productId);
       const warehouse = warehouses.find((w) => w.id === assignment.warehouseId);
       if (product && warehouse) {
         logStockMovement('Delete', `Deleted ${assignment.quantity} of ${product.name} from ${warehouse.name}`);
       }
 
-      // Show success message
       setAssignmentSummary({
         assigned: [],
         remaining: [{ productId: assignment.productId, quantity: assignment.quantity }],
@@ -290,20 +275,120 @@ export function WarehousesContent() {
     }
   };
 
-  // Filter warehouses
+  const handleGenerateLabel = () => {
+    setIsLabelDialogOpen(true);
+  };
+
+  const handleConfirmLabel = () => {
+    const warehouse = warehouses.find((w) => w.id === labelWarehouse);
+    if (!warehouse) {
+      alert('Warehouse not found.');
+      return;
+    }
+  
+    const assignedProducts = assignmentSummary?.assigned.map((item) => {
+      const product = products.find((p) => p.id === item.productId);
+      return {
+        ...item,
+        product,
+      };
+    });
+  
+    const labelContent = `
+      <div id="label-content" style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ccc; border-radius: 10px; width: 300px; background-color: #f9f9f9;">
+        <h2 style="text-align: center; color: #333;"></h2>
+        <p style="font-size: 14px; color: #555;"><strong>Warehouse:</strong> ${warehouse.name}</p>
+        <p style="font-size: 14px; color: #555;"><strong>Address:</strong> ${labelAddress}</p>
+        <h3 style="color: #333;">Products:</h3>
+        <ul style="list-style: none; padding: 0;">
+          ${assignedProducts?.map((a) => `
+            <li style="margin-bottom: 10px; padding: 10px; border-bottom: 1px solid #ddd;">
+              <strong style="color: #333;">ID:</strong> ${a.product?.id || 'N/A'}<br>
+              <strong style="color: #333;">SKU:</strong> ${a.product?.id || 'N/A'}<br>
+              <strong style="color: #333;">Barcode:</strong> <img src="${generateBarcode(a.product?.barcode || 'N/A')}" alt="Barcode"><br>
+              <strong style="color: #333;">Name:</strong> ${a.product?.name || 'N/A'}<br>
+              <strong style="color: #333;">Category:</strong> ${a.product?.category || 'Clothing'}<br>
+              <strong style="color: #333;">Price:</strong> £${a.product?.price || 'N/A'}<br>
+              <strong style="color: #333;">Quantity:</strong> ${a.quantity || 'N/A'}
+            </li>
+          `).join('')}
+        </ul>
+      </div>
+    `;
+  
+    // Append the label content to the DOM
+    const labelContainer = document.getElementById('generated-label');
+    if (labelContainer) {
+      labelContainer.innerHTML = labelContent;
+    }
+  
+    alert('Label generated successfully!');
+    setIsLabelGenerated(true); // Set label generated state to true
+    setIsLabelDialogOpen(false);
+  };
+
+        {/* @ts-expect-error ukhgjnm kj */}
+  const generateBarcode = (barcode) => {
+    const canvas = document.createElement('canvas');
+    JsBarcode(canvas, barcode, { format: 'CODE128' });
+    return canvas.toDataURL('image/png');
+  };
+
+  const handleDownloadLabel = () => {
+    const labelElement = document.getElementById('label-content');
+    if (labelElement) {
+      html2canvas(labelElement).then((canvas) => {
+        const link = document.createElement('a');
+        link.download = 'label.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }
+  };
+
+  const handlePrintLabel = () => {
+    const labelElement = document.getElementById('label-content');
+    if (labelElement) {
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(`
+          <html>
+            <head>
+              <title>Print Label</title>
+              <style>
+                body { font-family: Arial, sans-serif; }
+                img { max-width: 100%; height: auto; }
+              </style>
+            </head>
+            <body>
+              ${labelElement.innerHTML}
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+      } else {
+        alert('Failed to open print window. Please allow pop-ups and try again.');
+      }
+    } else {
+      alert('Label content not found. Please generate the label first.');
+    }
+  };
+
   const filteredWarehouses = warehouses.filter(warehouse =>
     warehouse.name.toLowerCase().includes(search.toLowerCase()) ||
     warehouse.location.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Calculate pagination
   const totalPages = Math.ceil(filteredWarehouses.length / ITEMS_PER_PAGE);
   const paginatedWarehouses = filteredWarehouses.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
 
-  const getStatusBadge = (status: string) => {
+// @ts-expect-error jk jk
+  const getStatusBadge = (status) => {
     switch (status) {
       case 'active':
         return <Badge className="bg-green-100 text-green-800">Active</Badge>;
@@ -314,13 +399,10 @@ export function WarehousesContent() {
     }
   };
 
-  const handleAddWarehouse = async (data: any) => {
+        {/* @ts-expect-error ukhgjnm kj */}
+  const handleAddWarehouse = async (data) => {
     if (!permissions.canCreateWarehouse) {
-      toast({
-        title: 'Permission Denied',
-        content: 'You do not have permission to create warehouses.',
-        variant: 'destructive',
-      });
+      alert('You do not have permission to create warehouses.');
       return;
     }
 
@@ -333,33 +415,23 @@ export function WarehousesContent() {
         id: `W${warehouses.length + 1}`,
         revenue: 0,
         products: 0,
-        assignedStocks: [], // Initialize assignedStocks
+        assignedStocks: [],
       };
       
       setWarehouses([newWarehouse, ...warehouses]);
       setShowAddDialog(false);
-      toast({
-        title: 'Warehouse Added',
-        content: 'The warehouse has been successfully added.',
-      });
+      alert('The warehouse has been successfully added.');
     } catch (error) {
-      toast({
-        title: 'Error',
-        content: 'Failed to add warehouse. Please try again.',
-        variant: 'destructive',
-      });
+      alert('Failed to add warehouse. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleEditWarehouse = async (data: any) => {
+// @ts-expect-error jk jk
+  const handleEditWarehouse = async (data) => {
     if (!permissions.canEditWarehouse) {
-      toast({
-        title: 'Permission Denied',
-        content: 'You do not have permission to edit warehouses.',
-        variant: 'destructive',
-      });
+      alert('You do not have permission to edit warehouses.');
       return;
     }
 
@@ -371,16 +443,9 @@ export function WarehousesContent() {
         w.id === editingWarehouse.id ? { ...w, ...data } : w
       ));
       setEditingWarehouse(null);
-      toast({
-        title: 'Warehouse Updated',
-        content: 'The warehouse has been successfully updated.',
-      });
+      alert('The warehouse has been successfully updated.');
     } catch (error) {
-      toast({
-        title: 'Error',
-        content: 'Failed to update warehouse. Please try again.',
-        variant: 'destructive',
-      });
+      alert('Failed to update warehouse. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -388,11 +453,7 @@ export function WarehousesContent() {
 
   const handleDeleteWarehouse = async () => {
     if (!permissions.canDeleteWarehouse) {
-      toast({
-        title: 'Permission Denied',
-        content: 'You do not have permission to delete warehouses.',
-        variant: 'destructive',
-      });
+      alert('You do not have permission to delete warehouses.');
       return;
     }
 
@@ -403,16 +464,9 @@ export function WarehousesContent() {
         
         setWarehouses(warehouses.filter(w => w.id !== deletingWarehouseId));
         setDeletingWarehouseId(null);
-        toast({
-          title: 'Warehouse Deleted',
-          content: 'The warehouse has been successfully deleted.',
-        });
+        alert('The warehouse has been successfully deleted.');
       } catch (error) {
-        toast({
-          title: 'Error',
-          content: 'Failed to delete warehouse. Please try again.',
-          variant: 'destructive',
-        });
+        alert('Failed to delete warehouse. Please try again.');
       } finally {
         setIsLoading(false);
       }
@@ -422,7 +476,7 @@ export function WarehousesContent() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Warehouse Management</h1>
+      <h1 className="text-2xl font-bold">Warehouse Management</h1>
         <div className="flex gap-2">
           {permissions.canCreateWarehouse && (
             <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
@@ -451,7 +505,6 @@ export function WarehousesContent() {
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
-                {/* Warehouse Selection */}
                 <Select onValueChange={setSelectedWarehouse} value={selectedWarehouse}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select Warehouse" />
@@ -465,7 +518,6 @@ export function WarehousesContent() {
                   </SelectContent>
                 </Select>
 
-                {/* Product Quantities */}
                 <div className="space-y-2">
                   {products.map((product) => (
                     <div key={product.id} className="flex items-center justify-between">
@@ -491,7 +543,6 @@ export function WarehousesContent() {
                   ))}
                 </div>
 
-                {/* Assign/Update Button */}
                 <Button onClick={editingAssignmentId ? handleUpdateAssignment : handleAssignStock}>
                   {editingAssignmentId ? 'Update Stock' : 'Assign Stock'}
                 </Button>
@@ -501,12 +552,11 @@ export function WarehousesContent() {
         </div>
       </div>
 
-      {/* Assignment Summary */}
       {assignmentSummary && (
         <div className="p-4 bg-blue-100 text-blue-800 rounded-lg">
           <h3 className="font-bold">Assignment Summary:</h3>
           <ul>
-          {assignmentSummary.assigned.map((item) => {
+            {assignmentSummary.assigned.map((item) => {
               const product = products.find((p) => p.id === item.productId);
               return (
                 <li key={item.productId}>
@@ -523,10 +573,46 @@ export function WarehousesContent() {
               );
             })}
           </ul>
+          <Button onClick={handleGenerateLabel} className="mt-2">Generate Label</Button>
         </div>
       )}
 
-      {/* Stock Movements Log */}
+      <Dialog open={isLabelDialogOpen} onOpenChange={setIsLabelDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Enter Address and Select Warehouse for Label</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Select onValueChange={setLabelWarehouse} value={labelWarehouse}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select Warehouse" />
+              </SelectTrigger>
+              <SelectContent>
+                {warehouses.map((warehouse) => (
+                  <SelectItem key={warehouse.id} value={warehouse.id}>
+                    {warehouse.name} - {warehouse.location}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Input
+              placeholder="Enter address"
+              value={labelAddress}
+              onChange={(e) => setLabelAddress(e.target.value)}
+            />
+            <Button onClick={handleConfirmLabel}>Generate Label</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <div id="generated-label" className="mt-4"></div>
+      {isLabelGenerated && ( // Conditionally render the "Print Label" button
+        <div className="flex gap-4 mt-4">
+          
+          <Button onClick={handlePrintLabel}>Print Label</Button>
+        </div>
+      )}
+
       <div className="border rounded-lg p-4">
         <h2 className="text-xl font-bold mb-4">Stock Movements</h2>
         <ul>
@@ -538,7 +624,6 @@ export function WarehousesContent() {
         </ul>
       </div>
 
-      {/* Assigned Stocks Table */}
       {assignedStocks.length > 0 && (
         <div className="border rounded-lg p-4">
           <h2 className="text-xl font-bold mb-4">Assigned Stocks</h2>
@@ -605,8 +690,8 @@ export function WarehousesContent() {
         </div>
       )}
 
-      {/* Map View */}
       <div className="h-[400px] rounded-lg border bg-card relative z-10">
+        {/* @ts-expect-error ukhgjnm kj */}
         <WarehouseMap locations={paginatedWarehouses.map(w => ({
           name: w.name,
           coordinates: w.coordinates,
@@ -616,7 +701,6 @@ export function WarehousesContent() {
         }))} />
       </div>
 
-      {/* Search and Stats */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center justify-between">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -625,7 +709,7 @@ export function WarehousesContent() {
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
-              setCurrentPage(1); // Reset to first page on search
+              setCurrentPage(1);
             }}
             className="pl-8"
           />
@@ -637,7 +721,6 @@ export function WarehousesContent() {
         </div>
       </div>
 
-      {/* Warehouses Table */}
       <div className="border rounded-lg">
         <Table>
           <TableHeader>
@@ -647,7 +730,7 @@ export function WarehousesContent() {
               <TableHead>Utilization</TableHead>
               <TableHead>Revenue</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Manager</TableHead>
+                            <TableHead>Manager</TableHead>
               <TableHead>Stocks Assigned</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -683,9 +766,9 @@ export function WarehousesContent() {
                   {warehouse.assignedStocks.length > 0 ? (
                     <ul>
                       {warehouse.assignedStocks.map((stock) => (
-                        // @ts-expect-error jh hj
+        // @ts-expect-error hmghj kuh
                         <li key={stock.id}>
-                           {/* @ts-expect-error jh hj */}
+        {/* @ts-expect-error ukhgjnm kj */}
                           {stock.quantity} of {products.find((p) => p.id === stock.productId)?.name}
                         </li>
                       ))}
@@ -760,7 +843,6 @@ export function WarehousesContent() {
         </Table>
       </div>
 
-      {/* Pagination */}
       <div className="flex items-center justify-between">
         <Button
           variant="outline"
@@ -785,4 +867,3 @@ export function WarehousesContent() {
     </div>
   );
 }
-             

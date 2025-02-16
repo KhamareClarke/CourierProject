@@ -23,7 +23,7 @@ const navigation = [
   // { name: "Tracking & Management", href: "/dashboard/tracking", icon: LoaderIcon, shortcut: "Alt + C" },
   { name: "Reports", href: "/dashboard/reports", icon: FileText, shortcut: "Alt + R" },
   { name: "Stock", href: "/dashboard/Stock", icon: FileText, shortcut: "Alt + R" },
-  { name: "Print Label", href: "/dashboard/print-label", icon: FileText, shortcut: "Alt + R" },
+  // { name: "Print Label", href: "/dashboard/print-label", icon: FileText, shortcut: "Alt + R" },
   // { name: "Upload Orders", href: "/dashboard/upload-orders", icon: FileText, shortcut: "Alt + R" },
   // { name: "Brand Protection", href: "/dashboard/brand-protection", icon: FileText, shortcut: "Alt + R" },
   { name: "Predictive Analysis", href: "/dashboard/predictive-analysis-dashboard", icon: FileText, shortcut: "Alt + R" },
